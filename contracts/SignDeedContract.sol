@@ -1,6 +1,5 @@
 pragma solidity 0.5.0;
- 
- import { ECDSALibrary } from "./ECDSALibrary.sol";
+  
   contract SignDeedContract {
       
      struct SignDeed {
@@ -61,6 +60,7 @@ pragma solidity 0.5.0;
             signDeed.verified=1;
             signDeeds[_signDeedId] = signDeed;
         }
+        updatedId = signDeed.id;
         emit updateBySellerEvent(updatedId);
     }
     
@@ -114,9 +114,6 @@ pragma solidity 0.5.0;
         signDeeds[index].next);
     }
  
-
       
 }
   
-
-

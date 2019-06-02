@@ -4,13 +4,13 @@ pragma solidity 0.5.0;
       
      struct Mutation {
         uint id;
-        uint saleDeedId;
+        uint signDeedId;
         uint propertyId;
-        bytes32 oldOwnerFullName;
-        bytes32 oldOwnerNic;
-        bytes32 newOwnerFullName;
-        bytes32 newOwnerNic;
+        uint mutatedOn;
+        uint latest;
         address mutatedBy;
+        address newOwnerPkey;
+        bytes32 newOwnerNic;
         uint next;
         uint prev;
     }
@@ -18,37 +18,46 @@ pragma solidity 0.5.0;
         Mutation[] public mutations;
         Mutation currentMutationNode;
         event newIdEvent(uint newID);
+        event updateMutationUpdateIdEvent(uint updatedId);
         constructor() public {
             // sentinel
-            mutations.push(Mutation(0, 0, 0,0x00,0x00, 0x00,0x00,address(0),0,0));
+            mutations.push(Mutation(0,0,0,0,0,address(0),address(0),0x00,0,0));
         }
 
 
     function insert(                                                                
-        uint _saleDeedId,
+        uint _signDeedId,
         uint _propertyId,
-        bytes32 _oldOwnerFullName,
-        bytes32 _oldOwnerNic,
-        bytes32 _newOwnerFullName,
-        bytes32 _newOwnerNic,
-        address _mutatedBy) public returns (uint newID) {
+        uint _mutatedOn,
+        address _mutatedBy,
+        address _newOwnerPkey,
+        bytes32 _newOwnerNic) public returns (uint newID) {
 
         newID = mutations.length;
 
         mutations.push(Mutation({
                     id:newID,                                                               
-                    saleDeedId:_saleDeedId,
+                    signDeedId:_signDeedId,
                     propertyId: _propertyId,
-                    oldOwnerFullName:_oldOwnerFullName,
-                    oldOwnerNic:_oldOwnerNic,
-                    newOwnerFullName:_newOwnerFullName,
-                    newOwnerNic:_newOwnerNic,
+                    mutatedOn:_mutatedOn,
+                    latest:1,
                     mutatedBy:_mutatedBy,
+                    newOwnerPkey:_newOwnerPkey,
+                    newOwnerNic:_newOwnerNic,
                     prev: newID-1,
                     next: 0
         }));
       mutations[newID-1].next=newID;
         emit newIdEvent(newID);
+    }
+
+ 
+    function markMutationOld(uint _id)  public returns (uint updatedId) {
+      Mutation memory mutation = mutations[_id];
+      mutation.latest = 0;
+      mutations[_id] = mutation;
+      updatedId = mutation.id;
+      emit updateMutationUpdateIdEvent(updatedId);
     }
 
     function isValidNode(uint id) internal view returns (bool) {
@@ -62,21 +71,21 @@ pragma solidity 0.5.0;
     }
 
     function getMutationFirst(uint index) public view returns(uint,
-        uint,uint,bytes32,bytes32,uint, uint) {
+        uint,uint,uint,uint,uint, uint) {
         return (mutations[index].id, 
-        mutations[index].saleDeedId,
+        mutations[index].signDeedId,
         mutations[index].propertyId,
-        mutations[index].oldOwnerFullName,
-        mutations[index].oldOwnerNic,
+        mutations[index].mutatedOn,
+        mutations[index].latest,
         mutations[index].prev, 
         mutations[index].next);
     }
    function getMutationSecond(uint index) public view returns(uint,
-        bytes32,bytes32,address,uint, uint) {
+        address,address,bytes32,uint, uint) {
         return (mutations[index].id, 
-        mutations[index].newOwnerFullName,
-        mutations[index].newOwnerNic,
         mutations[index].mutatedBy,
+        mutations[index].newOwnerPkey,
+        mutations[index].newOwnerNic,
         mutations[index].prev, 
         mutations[index].next);
     }

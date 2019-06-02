@@ -3,7 +3,7 @@ App = {
   contracts: {},
   deployedContracts: {},
   account: "0x0",
-
+  gasStandard:3000000,
   init: function() {
     return App.initWeb3();
   },
@@ -128,6 +128,33 @@ App = {
           .deployed()
           .then(function(instance) {
             App.deployedContracts.leasedPropertyTaxContract = instance;
+            instance
+              .newIdEvent(
+                {},
+                {
+                  fromBlock: 0,
+                  toBlock: "latest"
+                }
+              )
+              .watch(function(error, event) {
+                //console.log("event triggered", event)
+                // Reload screen
+              });
+          });
+      }
+    );
+
+      $.getJSON(
+      window.location.origin + "/json/SignDeedContract.json",
+      function(SignDeedContract) {
+        App.contracts.signDeedContract = TruffleContract(
+          SignDeedContract
+        );
+        App.contracts.signDeedContract.setProvider(App.web3Provider);
+        App.contracts.signDeedContract
+          .deployed()
+          .then(function(instance) {
+            App.deployedContracts.signDeedContract = instance;
             instance
               .newIdEvent(
                 {},
@@ -362,27 +389,115 @@ App = {
 
   // Deed Crud End
 
+   // SignDeed Start
+  insertSignDeedData: function(
+        _propertyId,
+        _deedId,
+        _soldAmount,
+        _buyerSignature,
+        _sellerSignature,
+        _fromAddress,
+        _gas
+  ) {
+    return App.deployedContracts.signDeedContract
+      .insert(
+        _propertyId,
+        _deedId,
+        _soldAmount,
+        _buyerSignature,
+        _sellerSignature,
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
+  getSignDeedCount: function() {
+    return App.deployedContracts.signDeedContract
+      .getSignDeedCount()
+      .then(function(size) {
+        return JSON.parse(size) - 1;
+      });
+  },
+  getSignDeedDetail: function(id) {
+    return App.deployedContracts.signDeedContract
+      .getSignDeedFirst(id)
+      .then(function(_firstData) {
+        let firstData = _firstData;
+        return App.deployedContracts.signDeedContract
+          .getSignDeedSecond(id)
+          .then(function(_secondData) {
+            let secondData = _secondData;
+                return {
+                  id: App.transformValue(firstData[0]),
+                  propertyId: App.transformValue(firstData[1]),
+                  deedId: App.transformValue(firstData[2]),
+                  soldAmount: App.transformValue(firstData[3]),
+                  sellerSignature: firstData[4],
+                  buyerSignature: secondData[3],
+                  verified: App.transformValue(secondData[4]),
+                  prevId: App.transformValue(secondData[5]),
+                  nextId: App.transformValue(secondData[6])
+                };
+              });
+          });
+  },
+  getSignDeedList: async function() {
+    let list = [];
+    let length = await App.getSignDeedCount();
+    if (length > 0) {
+      let obj = await App.getSignDeedDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getSignDeedDetail(obj.nextId);
+        list.push(obj);
+      }
+    }
+    return list;
+  },
+  getSignDeedByPropertyId: function(_propertyId) {
+    App.getDeedList().then(function(list) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].propertyId === _propertyId) {
+          return list[i];
+        }
+      }
+      return null;
+    });
+  },
+
+   getSignDeedByDeedId: function(_deedId) {
+    App.getDeedList().then(function(list) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].deedId === _deedId) {
+          return list[i];
+        }
+      }
+      return null;
+    });
+  },
+
+  // SignDeed Crud End
+
   // Mutation  Start
   insertMutationData: function(
-    _saleDeedId,
+    _signDeedId,
     _propertyId,
-    _oldOwnerFullName,
-    _oldOwnerNic,
-    _newOwnerFullName,
-    _newOwnerNic,
+    _mutatedOn,
     _mutatedBy,
+    _newOwnerPkey,
+    _newOwnerNic,
     _fromAddress,
     _gas
   ) {
     return App.deployedContracts.mutationContract
       .insert(
-        _saleDeedId,
+        _signDeedId,
         _propertyId,
-        _oldOwnerFullName,
-        _oldOwnerNic,
-        _newOwnerFullName,
-        _newOwnerNic,
+        _mutatedOn,
         _mutatedBy,
+        _newOwnerPkey,
+        _newOwnerNic,
         { from: _fromAddress, gas: _gas }
       )
       .then(function(response) {
@@ -408,13 +523,13 @@ App = {
             let secondData = _secondData;
             return {
               id: App.transformValue(firstData[0]),
-              saleDeedId: App.transformValue(firstData[1]),
+              signDeedId: App.transformValue(firstData[1]),
               propertyId: App.transformValue(firstData[2]),
-              oldOwnerFullName: App.transformValue(firstData[3]),
-              oldOwnerNic: App.transformValue(firstData[4]),
-              newOwnerFullName: App.transformValue(secondData[1]),
-              newOwnerNic: App.transformValue(secondData[2]),
-              mutatedBy: secondData[3].substring(0, 42),
+              mutatedOn: App.transformValue(firstData[3]),
+              latest: App.transformValue(firstData[4]),
+              mutatedBy: secondData[1].substring(0, 42),
+              newOwnerPkey: App.transformValue(secondData[2]),
+              newOwnerNic: App.transformValue(secondData[3]),
               prevId: App.transformValue(secondData[4]),
               nextId: App.transformValue(secondData[5])
             };
@@ -443,10 +558,22 @@ App = {
       return null;
     });
   },
-  getMutationBySaleDeedId: function(_saleDeedId) {
+  getMutationBySignDeedId: function(_signDeedId) {
     return App.getMutationList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
-        if (list[i].saleDeedId === _saleDeedId) {
+        if (list[i].signDeedId === _signDeedId) {
+          return list[i];
+        }
+      }
+      return null;
+    });
+  },
+
+   getLatestMutationByNewOwnerPkey: function(_newOwnerPkey) {
+    return App.getMutationList().then(function(list) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].newOwnerPkey === _newOwnerPkey && 
+          list[i].latest === 1) {
           return list[i];
         }
       }

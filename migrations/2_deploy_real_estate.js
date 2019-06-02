@@ -5,7 +5,8 @@ var leasedPropertyContract= artifacts.require("./LeasedpropertyContract.sol");
 var leasedpropertyTaxContract= artifacts.require("./LeasedpropertyTaxContract.sol");
 var mutationContract = artifacts.require("./MutationContract.sol");
 var propertyContract= artifacts.require("./PropertyContract.sol");
-
+var signDeedContract= artifacts.require("./SignDeedContract.sol");
+var ecdsaLibrary= artifacts.require("./ECDSALibrary.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(DeedContract);
@@ -13,4 +14,6 @@ module.exports = function(deployer) {
   deployer.deploy(leasedpropertyTaxContract);
   deployer.deploy(mutationContract);
   deployer.deploy(propertyContract);
+  deployer.deploy(signDeedContract);
+  deployer.deploy(ecdsaLibrary);
 };
