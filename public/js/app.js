@@ -291,7 +291,7 @@ App = {
         _areaSqYards,
         App.convertToBytes(_propertyType),
         App.convertToBytes(_kind),
-        App.convertToBytes(_managingOrg),
+        App.convertToBytes(_managingOrg.toLowerCase()),
         App.convertToBytes(_street),
         App.convertToBytes(_city),
         App.convertToBytes(_province),
@@ -548,6 +548,34 @@ App = {
         return response;
       });
   },
+
+   signDeedForBuyerIfNotSign: async function(
+        _signDeedId,
+        _soldAmount,
+        _fromAddress,
+        _gas
+  ) {
+    let obj = await App.getSignDeedDetail(_signDeedId);
+    if(obj == null){
+      throw "sign deed not exist";
+    }
+    if(obj.buyerSignature != "0x"){
+      throw "already signed";
+    }
+    const messageHash = web3.sha3( _soldAmount +"");
+    const signature = await web3.eth.sign(web3.eth.defaultAccount,messageHash);
+        
+    return App.deployedContracts.signDeedContract
+      .signForBuyer(
+        _signDeedId,
+        signature,
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
   getSignDeedCount: function() {
     return App.deployedContracts.signDeedContract
       .getSignDeedCount()
@@ -604,6 +632,22 @@ App = {
     }
     return list;
   },
+   getDeedListWithSignatureAndProperty: async function() {
+    let list = [];
+    let length = await App.getDeedCount();
+    if (length > 0) {
+      let obj = await App.getDeedDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getDeedDetail(obj.nextId);
+        let signDeed = await App.getSignDeedByDeedId(obj.id);
+        obj.signDeed = signDeed;
+        let property = await App.getPropertyDetail(signDeed.propertyId);
+        obj.property = property;
+        list.push(obj);
+      }
+    }
+    return list;
+  },
   getSignDeedByPropertyId: function(_propertyId) {
    return App.getSignDeedList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
@@ -631,21 +675,38 @@ App = {
     let pendingList = [];
     for(let i=0;i<list.length; i++){
       if(list[i].sellerNic === _nic && list[i].signDeed != null &&
-        list[i].signDeed.verified === 0 && list[i].signDeed.sellerSignature === "0x"){
-        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        list[i].signDeed.verified === 0 && list[i].signDeed.sellerSignature === "0x"){        
         let obj =list[i]; 
         obj.pendingAs="seller";
         list[i] = obj;
         pendingList.push(list[i]);
       }else if(list[i].buyerNic === _nic && list[i].signDeed != null && 
-        list[i].signDeed.verified === 0 && list[i].signDeed.buyerSignature === "0x"){
-        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        list[i].signDeed.verified === 0 && list[i].signDeed.buyerSignature === "0x"){      
         let obj =list[i]; 
         obj.pendingAs="buyer";
         list[i] = obj;
+        pendingList.push(list[i]);
       }
     }
     return pendingList;
+  },
+
+  getPendingMutationListForRegistrar: async function(_managingOrg) {
+    let list =  await App.getDeedListWithSignatureAndProperty();
+    let verifiedList = [];
+    for(let i=0;i<list.length; i++){
+      if(list[i].signDeed != null &&
+        list[i].signDeed.verified === 1 && list[i].property.managingOrg === _managingOrg.toLowerCase()){
+        let mutationExist = await App.getMutationBySignDeedId(list[i].signDeed.id);
+        if(mutationExist === null){
+          let obj =list[i]; 
+          obj.pendingAs="mutation";      
+          list[i] = obj;
+          verifiedList.push(list[i]);
+        }
+      }
+    }
+    return verifiedList;
   },
 
   getPendingSignatureListByPublicKey: async function(_publicKey) {
@@ -653,15 +714,13 @@ App = {
     let pendingList = [];
     for(let i=0;i<list.length; i++){
       if(new String(list[i].sellerPKey).toLowerCase() === new String(_publicKey).toLowerCase() && list[i].signDeed != null &&
-        list[i].signDeed.verified === 0 && web3.toDecimal(list[i].signDeed.sellerSignature) === 0){
-        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        list[i].signDeed.verified === 0 && web3.toDecimal(list[i].signDeed.sellerSignature) === 0){      
         let obj =list[i]; 
         obj.pendingAs="seller";
         list[i] = obj;
         pendingList.push(list[i]);
       }else if(new String(list[i].buyerPKey).toLowerCase() === new String(_publicKey).toLowerCase() && list[i].signDeed != null && 
-        list[i].signDeed.verified === 0 && web3.toDecimal(list[i].signDeed.buyerSignature) === 0){
-        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        list[i].signDeed.verified === 0 && web3.toDecimal(list[i].signDeed.buyerSignature) === 0){        
         let obj =list[i]; 
         obj.pendingAs="buyer";
         list[i] = obj;
@@ -690,13 +749,59 @@ App = {
         _mutatedOn,
         _mutatedBy,
         _newOwnerPkey,
-        _newOwnerNic,
+         App.convertToBytes(_newOwnerNic),
         { from: _fromAddress, gas: _gas }
       )
       .then(function(response) {
         //console.log(response);
         return response;
       });
+  },
+    insertMutationDataWhileMarkLastOneOld: async function(
+    _signDeedId,
+    _propertyId,
+    _mutatedOn,
+    _mutatedBy,
+    _newOwnerPkey,
+    _newOwnerNic,
+    _fromAddress,
+    _gas
+  ) {
+
+    let mutation = await App.getLatestMutationByPropertyId(_propertyId);
+    if(mutation != null){
+
+      if(mutation.newOwnerNic === _newOwnerNic &&
+        mutation.propertyId === _propertyId){
+          throw "Already Mutated";
+      }else{
+          let trans =  await App.markMutationOld(mutation.id,_fromAddress,_gas);
+          console.log(trans);
+      }
+    }
+
+    return App.deployedContracts.mutationContract
+      .insert(
+        _signDeedId,
+        _propertyId,
+        _mutatedOn,
+        _mutatedBy,
+        _newOwnerPkey,
+         App.convertToBytes(_newOwnerNic),
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
+  markMutationOld: function (_mutationId,  _fromAddress,
+    _gas){
+     return App.deployedContracts.mutationContract
+     .markMutationOld(_mutationId, { from: _fromAddress, gas: _gas })
+     .then(function(response){
+      return response;
+     });
   },
   getMutationCount: function() {
     return App.deployedContracts.mutationContract
@@ -741,10 +846,11 @@ App = {
     }
     return list;
   },
-  getMutationByPropertyId: function(_propertyId) {
+  getLatestMutationByPropertyId: function(_propertyId) {
     return App.getMutationList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
-        if (list[i].propertyId === _propertyId) {
+        if (list[i].propertyId === _propertyId &&
+          list[i].latest === 1) {
           return list[i];
         }
       }
