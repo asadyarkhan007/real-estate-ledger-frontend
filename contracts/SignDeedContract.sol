@@ -7,8 +7,8 @@ pragma solidity 0.5.0;
         uint propertyId;
         uint deedId;
         uint soldAmount;
-        bytes32 buyerSignature;
-        bytes32 sellerSignature;
+        bytes buyerSignature;
+        bytes sellerSignature;
         uint verified;
         uint next;
         uint prev;
@@ -21,7 +21,7 @@ pragma solidity 0.5.0;
         event updateBySellerEvent(uint updatedId);
         constructor() public {
             // sentinel
-            signDeeds.push(SignDeed(0, 0, 0,0, 0x00,0x00,0,0,0));
+            signDeeds.push(SignDeed(0, 0, 0,0, new bytes(0),new bytes(0) ,0 ,0 , 0));
         }
 
 
@@ -37,8 +37,8 @@ pragma solidity 0.5.0;
                  propertyId:_propertyId,
                  deedId: _deedId,
                  soldAmount: _soldAmount,
-                 buyerSignature: 0x00,
-                 sellerSignature: 0x00,
+                 buyerSignature: new bytes(0),
+                 sellerSignature: new bytes(0),
                  verified:0,
                  prev: newID-1,
                  next: 0
@@ -49,14 +49,14 @@ pragma solidity 0.5.0;
     
      function signForSeller(                                                                
         uint _signDeedId,
-        bytes32 _sellerSignature) public returns (uint updatedId) {
+        bytes memory _sellerSignature) public returns (uint updatedId) {
 
         SignDeed memory signDeed = signDeeds[_signDeedId];
         //verify buyer signature code
-        signDeed.sellerSignature=_sellerSignature;
+        signDeed.sellerSignature=  _sellerSignature;
         signDeeds[_signDeedId] = signDeed;
-        if(signDeed.sellerSignature  != 0
-        && signDeed.buyerSignature  != 0){
+        if(keccak256(signDeed.sellerSignature)  != keccak256(new bytes(0))
+        && keccak256(signDeed.buyerSignature)  != keccak256(new bytes(0))){
             signDeed.verified=1;
             signDeeds[_signDeedId] = signDeed;
         }
@@ -66,14 +66,14 @@ pragma solidity 0.5.0;
     
      function signForBuyer(                                                                
         uint _signDeedId,
-        bytes32 _buyerSignature) public returns (uint updatedId) {
+        bytes memory _buyerSignature) public returns (uint updatedId) {
 
         SignDeed memory signDeed = signDeeds[_signDeedId];
         //verify buyer signature code
         signDeed.buyerSignature=_buyerSignature;
         signDeeds[_signDeedId] = signDeed;
-        if(signDeed.sellerSignature  != 0
-        && signDeed.buyerSignature  != 0){
+        if(keccak256(signDeed.sellerSignature)  != keccak256(new bytes(0))
+        && keccak256(signDeed.buyerSignature)  != keccak256(new bytes(0))){
             signDeed.verified=1;
             signDeeds[_signDeedId] = signDeed;
         }
@@ -93,7 +93,7 @@ pragma solidity 0.5.0;
     }
 
     function getSignDeedFirst(uint index) public view returns(uint,
-        uint,uint,uint,bytes32,uint, uint) {
+        uint,uint,uint,bytes memory,uint, uint) {
         return (signDeeds[index].id, 
         signDeeds[index].propertyId,
         signDeeds[index].deedId,
@@ -104,7 +104,7 @@ pragma solidity 0.5.0;
     }
     
      function getSignDeedSecond(uint index) public view returns(uint,
-        uint,uint,bytes32,uint,uint, uint) {
+        uint,uint,bytes memory,uint,uint, uint) {
         return (signDeeds[index].id, 
         signDeeds[index].propertyId,
         signDeeds[index].deedId,

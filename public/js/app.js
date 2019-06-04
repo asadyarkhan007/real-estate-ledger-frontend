@@ -521,6 +521,33 @@ App = {
         return response;
       });
   },
+   signDeedForSellerIfNotSign: async function(
+        _signDeedId,
+        _soldAmount,
+        _fromAddress,
+        _gas
+  ) {
+    let obj = await App.getSignDeedDetail(_signDeedId);
+    if(obj == null){
+      throw "sign deed not exist";
+    }
+    if(obj.sellerSignature != "0x"){
+      throw "already signed";
+    }
+    const messageHash = web3.sha3( _soldAmount +"");
+    const signature = await web3.eth.sign(web3.eth.defaultAccount,messageHash);
+        
+    return App.deployedContracts.signDeedContract
+      .signForSeller(
+        _signDeedId,
+        signature,
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
   getSignDeedCount: function() {
     return App.deployedContracts.signDeedContract
       .getSignDeedCount()
@@ -603,13 +630,15 @@ App = {
     let list =  await App.getDeedListWithSignature();
     let pendingList = [];
     for(let i=0;i<list.length; i++){
-      if(list[i].sellerNic === _nic && list[i].signDeed != null && web3.toDecimal(list[i].signDeed.sellerSignature) === 0){
+      if(list[i].sellerNic === _nic && list[i].signDeed != null &&
+        list[i].signDeed.verified === 0 && list[i].signDeed.sellerSignature === "0x"){
         // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
         let obj =list[i]; 
         obj.pendingAs="seller";
         list[i] = obj;
         pendingList.push(list[i]);
-      }else if(list[i].buyerNic === _nic && list[i].signDeed != null && web3.toDecimal(list[i].signDeed.buyerSignature) === 0){
+      }else if(list[i].buyerNic === _nic && list[i].signDeed != null && 
+        list[i].signDeed.verified === 0 && list[i].signDeed.buyerSignature === "0x"){
         // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
         let obj =list[i]; 
         obj.pendingAs="buyer";
@@ -619,8 +648,26 @@ App = {
     return pendingList;
   },
 
-  getPendingSignatureListByPublicKey: function(_publicKey) {
-    
+  getPendingSignatureListByPublicKey: async function(_publicKey) {
+     let list =  await App.getDeedListWithSignature();
+    let pendingList = [];
+    for(let i=0;i<list.length; i++){
+      if(new String(list[i].sellerPKey).toLowerCase() === new String(_publicKey).toLowerCase() && list[i].signDeed != null &&
+        list[i].signDeed.verified === 0 && web3.toDecimal(list[i].signDeed.sellerSignature) === 0){
+        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        let obj =list[i]; 
+        obj.pendingAs="seller";
+        list[i] = obj;
+        pendingList.push(list[i]);
+      }else if(new String(list[i].buyerPKey).toLowerCase() === new String(_publicKey).toLowerCase() && list[i].signDeed != null && 
+        list[i].signDeed.verified === 0 && web3.toDecimal(list[i].signDeed.buyerSignature) === 0){
+        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        let obj =list[i]; 
+        obj.pendingAs="buyer";
+        list[i] = obj;
+      }
+    }
+    return pendingList;
   },
 
   // SignDeed Crud End
