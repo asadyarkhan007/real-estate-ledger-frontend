@@ -2346,12 +2346,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x0Eca503C4E51D32C055636ef10e2c5e45e3F39A3",
-      "transactionHash": "0x25e5ec7c612a46e12572c2e17f2cff8439d9de72e2e3f8e8b67311d01fbc5eda"
+      "address": "0x3A99372a815825B2055389DA7Af72f1AE6aa67c9",
+      "transactionHash": "0x97b0c078971dc1171b577bafb73afbbf494ec101c8522b3569fa242d84c49edc"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-06-02T16:02:10.224Z",
+  "updatedAt": "2019-06-04T04:38:23.450Z",
   "devdoc": {
     "details": "Elliptic Curve Digital Signature Algorithm (ECDSA) operations.\r  * These functions can be used to verify that a message was signed by the holder\r of the private keys of a given address.\r",
     "methods": {}

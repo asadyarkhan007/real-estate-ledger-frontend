@@ -3,7 +3,7 @@ App = {
   contracts: {},
   deployedContracts: {},
   account: "0x0",
-  gasStandard:3000000,
+  stdGasAmount:3000000,
   init: function() {
     return App.initWeb3();
   },

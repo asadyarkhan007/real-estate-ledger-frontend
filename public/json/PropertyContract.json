@@ -8432,12 +8432,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x512FB1530939e4e2d6574b9a822e39c8C8b1403d",
-      "transactionHash": "0x7af9852a7b47ce0f53c65c34e12420261b6c36cae4dc4bff987b8a6e94260b6f"
+      "address": "0xA3D8e2724034C2Dc0a0F0293682D07406f0EdF17",
+      "transactionHash": "0x4ed0dba3b3e387ab12241a80fad5a0da7afd1b116a438ad2b11ec2665290dfc6"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-06-02T16:02:10.191Z",
+  "updatedAt": "2019-06-04T04:38:23.424Z",
   "devdoc": {
     "methods": {}
   },
