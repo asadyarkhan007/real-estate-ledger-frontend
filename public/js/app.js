@@ -2,7 +2,7 @@ App = {
   web3Provider: null,
   contracts: {},
   deployedContracts: {},
-  account: "0x0",
+  adminAccount: "0x0",
   stdGasAmount:3000000,
   init: function() {
     return App.initWeb3();
@@ -24,9 +24,12 @@ App = {
       web3 = new Web3(App.web3Provider);
     }
     web3.eth.defaultAccount = web3.eth.accounts[0];
+    adminAccount = web3.eth.accounts[0];
     return App.initContract();
   },
-
+  setDefaultAccount(account){
+       web3.eth.defaultAccount = account;
+  },
   initContract: function() {
     $.getJSON(window.location.origin + "/json/PropertyContract.json", function(
       PropertyContract
@@ -173,30 +176,28 @@ App = {
   },
   // Property Crud Start
   insertPropertyData: function(
-    plotOffChainId,
     _propertyOffChainId,
     _areaSqYards,
-    _style,
     _propertyType,
     _kind,
     _managingOrg,
     _street,
     _city,
+    _province,
     _country,
     _fromAddress,
     _gas
   ) {
     return App.deployedContracts.propertyContract
       .insert(
-        plotOffChainId,
         _propertyOffChainId,
         _areaSqYards,
-        App.convertToBytes(_style),
         App.convertToBytes(_propertyType),
-        App.convertToBytes(_managingOrg),
         App.convertToBytes(_kind),
+        App.convertToBytes(_managingOrg),
         App.convertToBytes(_street),
         App.convertToBytes(_city),
+        App.convertToBytes(_province),
         App.convertToBytes(_country),
         { from: _fromAddress, gas: _gas }
       )
@@ -227,15 +228,14 @@ App = {
                 let thirdData = _thirdData;
                 return {
                   id: App.transformValue(firstData[0]),
-                  plotOffChainId: App.transformValue(firstData[1]),
-                  propertyOffChainId: App.transformValue(firstData[2]),
-                  areaSqYards: App.transformValue(firstData[3]),
-                  style: App.transformValue(firstData[4]),
-                  propertyType: App.transformValue(secondData[1]),
-                  kind: App.transformValue(secondData[2]),
-                  managingOrg: App.transformValue(secondData[3]),
-                  street: App.transformValue(thirdData[1]),
-                  city: App.transformValue(thirdData[2]),
+                  propertyOffChainId: App.transformValue(firstData[1]),
+                  areaSqYards: App.transformValue(firstData[2]),
+                  propertyType : App.transformValue(firstData[3]),
+                  kind: App.transformValue(secondData[1]),
+                  managingOrg: App.transformValue(secondData[2]),
+                  street: App.transformValue(secondData[3]),
+                  city: App.transformValue(thirdData[1]),
+                  province: App.transformValue(thirdData[2]),
                   country: App.transformValue(thirdData[3]),
                   prevId: App.transformValue(thirdData[4]),
                   nextId: App.transformValue(thirdData[5])
@@ -257,7 +257,8 @@ App = {
     return list;
   },
   getPropertyByOffChainPropertyId: function(_OffChainPropertyId) {
-    App.getDeedList().then(function(list) {
+
+    return App.getPropertyList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
         if (list[i].propertyOffChainId === _OffChainPropertyId) {
           return list[i];
@@ -266,21 +267,56 @@ App = {
       return null;
     });
   },
+   insertPropertyDataIfNotExist: async function(
+    _propertyOffChainId,
+    _areaSqYards,
+    _propertyType,
+    _kind,
+    _managingOrg,
+    _street,
+    _city,
+    _province,
+    _country,
+    _fromAddress,
+    _gas
+  ) {
+    let obj = await App.getPropertyByOffChainPropertyId(_propertyOffChainId);
+    if(obj != null){
+      console.log("property already exist");
+      return;
+    }
+    return App.deployedContracts.propertyContract
+      .insert(
+        _propertyOffChainId,
+        _areaSqYards,
+        App.convertToBytes(_propertyType),
+        App.convertToBytes(_kind),
+        App.convertToBytes(_managingOrg),
+        App.convertToBytes(_street),
+        App.convertToBytes(_city),
+        App.convertToBytes(_province),
+        App.convertToBytes(_country),
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
 
   syncOffChainPropertiesToBlockChain: function(list) {
     for (let i = 0; i < list.length; i++) {
       let obj = App.getPropertyByOffChainPropertyId(list[i].propertyOffChainId);
       if (obj != null) {
-        App.insertPropertyData(
-          obj.plotOffChainId,
+        App.insertPropertyData(      
           obj.propertyOffChainId,
-          obj.areaSqYards,
-          obj.style,
+          obj.areaSqYards,        
           obj.propertyType,
           obj.kind,
           obj.managingOrg,
           obj.street,
           obj.city,
+          obj.province,
           obj.country,
           obj.fromAddress,
           obj.gas
@@ -377,7 +413,7 @@ App = {
     return list;
   },
   getDeedByPropertyId: function(_propertyId) {
-    App.getDeedList().then(function(list) {
+   return  App.getDeedList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
         if (list[i].propertyId === _propertyId) {
           return list[i];
@@ -387,6 +423,58 @@ App = {
     });
   },
 
+   getDeedByPropertyIdAndSellerAndBuyerNIC: function(_propertyId,_sellerNic,_buyerNic) {
+   return  App.getDeedList().then(function(list) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].propertyId === _propertyId &&
+          list[i].buyerNic === _buyerNic && list[i].sellerNic === _sellerNic) {
+          return list[i];
+        }
+      }
+      return null;
+    });
+  },
+
+  insertDeedDataIfNotExist: async function(
+    _propertyId,
+    _stampPaperAmount,
+    _soldAmount,
+    _deedType,
+    _sellerFullName,
+    _sellerNic,
+    _sellerPKey,
+    _buyerFullName,
+    _buyerNic,
+    _buyerPKey,
+    _fromAddress,
+    _gas
+  ) {
+    let obj = await App.getDeedByPropertyIdAndSellerAndBuyerNIC(_propertyId,_sellerNic,_buyerNic);
+    if(obj != null){
+      console.log("deed already exist");
+      return;
+    }
+
+    return App.deployedContracts.deedContract
+      .insert(
+        _propertyId,
+        _stampPaperAmount,
+        _soldAmount,
+        App.convertToBytes(_deedType),
+        App.convertToBytes(_sellerFullName),
+        App.convertToBytes(_sellerNic),
+        _sellerPKey,
+        App.convertToBytes(_buyerFullName),
+        App.convertToBytes(_buyerNic),
+        _buyerPKey,
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
+
   // Deed Crud End
 
    // SignDeed Start
@@ -394,8 +482,6 @@ App = {
         _propertyId,
         _deedId,
         _soldAmount,
-        _buyerSignature,
-        _sellerSignature,
         _fromAddress,
         _gas
   ) {
@@ -404,8 +490,30 @@ App = {
         _propertyId,
         _deedId,
         _soldAmount,
-        _buyerSignature,
-        _sellerSignature,
+        { from: _fromAddress, gas: _gas }
+      )
+      .then(function(response) {
+        //console.log(response);
+        return response;
+      });
+  },
+   insertSignDeedDataIfNotExist: async function(
+        _propertyId,
+        _deedId,
+        _soldAmount,
+        _fromAddress,
+        _gas
+  ) {
+    let obj = await App.getSignDeedByDeedId(_deedId);
+    if(obj != null){
+      console.log("sign deed already exist");
+      return;
+    }
+    return App.deployedContracts.signDeedContract
+      .insert(
+        _propertyId,
+        _deedId,
+        _soldAmount,
         { from: _fromAddress, gas: _gas }
       )
       .then(function(response) {
@@ -455,8 +563,22 @@ App = {
     }
     return list;
   },
+  getDeedListWithSignature: async function() {
+    let list = [];
+    let length = await App.getDeedCount();
+    if (length > 0) {
+      let obj = await App.getDeedDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getDeedDetail(obj.nextId);
+        let signDeed = await App.getSignDeedByDeedId(obj.id);
+        obj.signDeed = signDeed;
+        list.push(obj);
+      }
+    }
+    return list;
+  },
   getSignDeedByPropertyId: function(_propertyId) {
-    App.getDeedList().then(function(list) {
+   return App.getSignDeedList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
         if (list[i].propertyId === _propertyId) {
           return list[i];
@@ -467,7 +589,7 @@ App = {
   },
 
    getSignDeedByDeedId: function(_deedId) {
-    App.getDeedList().then(function(list) {
+   return App.getSignDeedList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
         if (list[i].deedId === _deedId) {
           return list[i];
@@ -475,6 +597,30 @@ App = {
       }
       return null;
     });
+  },
+
+  getPendingSignatureListByNic: async function(_nic) {
+    let list =  await App.getDeedListWithSignature();
+    let pendingList = [];
+    for(let i=0;i<list.length; i++){
+      if(list[i].sellerNic === _nic && list[i].signDeed != null && web3.toDecimal(list[i].signDeed.sellerSignature) === 0){
+        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        let obj =list[i]; 
+        obj.pendingAs="seller";
+        list[i] = obj;
+        pendingList.push(list[i]);
+      }else if(list[i].buyerNic === _nic && list[i].signDeed != null && web3.toDecimal(list[i].signDeed.buyerSignature) === 0){
+        // alternate compare with "0x0000000000000000000000000000000000000000000000000000000000000000"
+        let obj =list[i]; 
+        obj.pendingAs="buyer";
+        list[i] = obj;
+      }
+    }
+    return pendingList;
+  },
+
+  getPendingSignatureListByPublicKey: function(_publicKey) {
+    
   },
 
   // SignDeed Crud End

@@ -4,15 +4,14 @@ pragma solidity 0.5.0;
       
      struct Property {
         uint id;
-        uint plotOffChainId;
         uint propertyOffChainId;
         uint areaSqYards;
-        bytes32  style;
         bytes32  propertyType;
         bytes32  kind;
         bytes32  managingOrg;
         bytes32  street;
         bytes32  city;
+        bytes32 province;
         bytes32  country;
         uint next;
         uint prev;
@@ -23,27 +22,26 @@ pragma solidity 0.5.0;
         event newIdEvent(uint newID);
         constructor() public {
             // sentinel
-            properties.push(Property(0, 0, 0, 0, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0,0));
+            properties.push(Property(0, 0, 0, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0,0));
         }
 
 
-    function insert(uint _plotOffChainId,uint _propertyOffChainId,uint _areaSqYards,bytes32 _style,
+    function insert(uint _propertyOffChainId,uint _areaSqYards,
         bytes32 _propertyType,bytes32 _kind,bytes32 _managingOrg,bytes32 _street,
-        bytes32 _city,bytes32 _country) public returns (uint newID) {
+        bytes32 _city,bytes32 _province,bytes32 _country) public returns (uint newID) {
 
         newID = properties.length;
 
         properties.push(Property({
                 id:newID,
-                plotOffChainId:_plotOffChainId,
                 propertyOffChainId:_propertyOffChainId,
                 areaSqYards:_areaSqYards,
-                style:_style,
                 propertyType:_propertyType,
                 kind:_kind,
                 managingOrg:_managingOrg,
                 street:_street,
                 city:_city,
+                province:_province,
                 country:_country,
                 prev: newID-1,
                 next: 0
@@ -63,21 +61,20 @@ pragma solidity 0.5.0;
     }
 
     function getPropertyFirst(uint index) public view returns(uint,
-        uint,uint,uint,bytes32,uint, uint) {
+        uint,uint,bytes32,uint, uint) {
         return (properties[index].id, 
-        properties[index].plotOffChainId,
         properties[index].propertyOffChainId,
         properties[index].areaSqYards,
-        properties[index].style,
+        properties[index].propertyType,
         properties[index].prev, 
         properties[index].next);
     }
     function getPropertySecond(uint index) public view returns(uint,
         bytes32,bytes32,bytes32,uint, uint) {
         return (properties[index].id, 
-        properties[index].propertyType,
         properties[index].kind,
         properties[index].managingOrg,
+        properties[index].street,
         properties[index].prev, 
         properties[index].next);
     }
@@ -85,8 +82,8 @@ pragma solidity 0.5.0;
      function getPropertyThird(uint index) public view returns(uint,
         bytes32,bytes32,bytes32,uint, uint) {
         return (properties[index].id, 
-        properties[index].street,
         properties[index].city,
+        properties[index].province,
         properties[index].country,
         properties[index].prev, 
         properties[index].next);
