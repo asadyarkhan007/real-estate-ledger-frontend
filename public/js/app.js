@@ -826,7 +826,7 @@ App = {
               mutatedOn: App.transformValue(firstData[3]),
               latest: App.transformValue(firstData[4]),
               mutatedBy: secondData[1].substring(0, 42),
-              newOwnerPkey: App.transformValue(secondData[2]),
+              newOwnerPkey: secondData[2].substring(0, 42),
               newOwnerNic: App.transformValue(secondData[3]),
               prevId: App.transformValue(secondData[4]),
               nextId: App.transformValue(secondData[5])
@@ -846,6 +846,72 @@ App = {
     }
     return list;
   },
+  getMutationListWithProperties: async function() {
+    let list = [];
+    let length = await App.getMutationCount();
+    if (length > 0) {
+      let obj = await App.getMutationDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getMutationDetail(obj.nextId);
+        let property = await App.getPropertyDetail(obj.propertyId);
+        obj.property = property;
+        list.push(obj);
+      }
+    }
+    return list;
+  },
+  getMutatedPropertiesForRegistrarByOffchainProperties: async function(properties) {
+      let mutationListWithProperties = await App.getMutationListWithProperties();
+      let mutatedProperties = [];
+      for(let i =0 ; i < mutationListWithProperties.length; i++){
+              let obj = App.findOffChainProperty(properties,
+              mutationListWithProperties[i].property.propertyOffChainId);
+              if(obj != null){
+              obj.mutatedProperty = mutationListWithProperties[i];
+              mutatedProperties.push(obj);            
+              }
+      }
+      return mutatedProperties;      
+  },
+  getMutatedPropertiesForUserByOffchainPropertiesAndNic: async function(properties,nic) {
+      let mutationListWithProperties = await App.getMutationListWithProperties();
+      let mutatedProperties = [];
+      for(let i =0 ; i < mutationListWithProperties.length; i++){
+              let obj = App.findOffChainProperty(properties,
+              mutationListWithProperties[i].property.propertyOffChainId);
+              if(obj != null  && mutationListWithProperties[i].newOwnerNic === nic
+                && mutationListWithProperties[i].latest === 1){
+              obj.mutatedProperty = mutationListWithProperties[i];
+              mutatedProperties.push(obj);            
+              }
+      }
+      return mutatedProperties;      
+  },
+   getMutatedPropertiesForUserByNic: async function(nic) {
+    let list = [];
+    let length = await App.getMutationCount();
+    if (length > 0) {
+      let obj = await App.getMutationDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getMutationDetail(obj.nextId);
+        if(nic === obj.newOwnerNic && obj.latest === 1){
+          let property = await App.getPropertyDetail(obj.propertyId);
+          obj.property = property;
+          list.push(obj);
+        }
+      }
+    }
+    return list;
+  },
+  findOffChainProperty: function(properties, propertyOffChainId){
+    for(let i =0;i<properties.length;i++){
+        if(properties[i].id === propertyOffChainId){
+        return properties[i];
+        }
+    }
+    return null;
+  }
+  ,
   getLatestMutationByPropertyId: function(_propertyId) {
     return App.getMutationList().then(function(list) {
       for (let i = 0; i < list.length; i++) {
@@ -856,6 +922,21 @@ App = {
       }
       return null;
     });
+  },
+  getLatestMutationByOffChainPropertyId: async function(_offChainPropertyId) {
+    let length = await App.getMutationCount();
+    if (length > 0) {
+      let obj = await App.getMutationDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getMutationDetail(obj.nextId);
+        let property = await App.getPropertyDetail(obj.propertyId);
+        obj.property = property;
+        if(obj.latest===1 && obj.property.propertyOffChainId===_offChainPropertyId){
+          return obj;
+        }
+      }
+    }
+    return null;
   },
   getMutationBySignDeedId: function(_signDeedId) {
     return App.getMutationList().then(function(list) {
@@ -888,8 +969,11 @@ App = {
     _propertyId,
     _leaseStartDate,
     _leaseEndDate,
-    _leasedBy,
-    _leasedTo,
+    _leasedByPkey,
+    _leasedByNic,
+    _leasedToPkey,
+    _leasedToNic,
+    _leasedAmount,
     _taxAmountPerYear,
     _fromAddress,
     _gas
@@ -900,8 +984,11 @@ App = {
         _propertyId,
         _leaseStartDate,
         _leaseEndDate,
-        _leasedBy,
-        _leasedTo,
+        _leasedByPkey,
+         App.convertToBytes(_leasedByNic),
+        _leasedToPkey,
+         App.convertToBytes(_leasedToNic),
+        _leasedAmount,
         _taxAmountPerYear,
         { from: _fromAddress, gas: _gas }
       )
@@ -926,18 +1013,26 @@ App = {
           .getLeasedSecond(id)
           .then(function(_secondData) {
             let secondData = _secondData;
-            return {
-              id: App.transformValue(firstData[0]),
-              mutationId: App.transformValue(firstData[1]),
-              propertyId: App.transformValue(firstData[2]),
-              leaseStartDate: App.transformValue(firstData[3]),
-              leaseEndDate: App.transformValue(firstData[4]),
-              leasedBy: secondData[1].substring(0, 42),
-              leasedTo: secondData[2].substring(0, 42),
-              taxAmountPerYear: App.transformValue(secondData[3]),
-              prevId: App.transformValue(secondData[4]),
-              nextId: App.transformValue(secondData[5])
-            };
+             return App.deployedContracts.leasedPropertyContract
+                .getLeasedThird(id)
+                .then(function(_thirdData) {
+                  let thirdData = _thirdData;
+                    return {
+                      id: App.transformValue(firstData[0]),
+                      mutationId: App.transformValue(firstData[1]),
+                      propertyId: App.transformValue(firstData[2]),
+                      leaseStartDate: App.transformValue(firstData[3]),
+                      leaseEndDate: App.transformValue(firstData[4]),
+                      leasedByPkey: secondData[1].substring(0, 42),
+                      leasedByNic: App.transformValue(secondData[2]),
+                      leasedToPkey: thirdData[1].substring(0, 42),
+                      leasedToNic: App.transformValue(thirdData[2]),
+                      leasedAmount: App.transformValue(thirdData[3]),
+                      taxAmountPerYear: App.transformValue(thirdData[4]),
+                      prevId: App.transformValue(thirdData[5]),
+                      nextId: App.transformValue(thirdData[6])
+                    };
+                });
           });
       });
   },
@@ -949,6 +1044,20 @@ App = {
       while (obj.nextId != 0) {
         obj = await App.getLeasedPropertyDetail(obj.nextId);
         list.push(obj);
+      }
+    }
+    return list;
+  },
+   getLeasedPropertyListByNic: async function(nic) {
+    let list = [];
+    let length = await App.getLeasedPropertyCount();
+    if (length > 0) {
+      let obj = await App.getLeasedPropertyDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getLeasedPropertyDetail(obj.nextId);
+        if(obj.leasedToNic === nic){
+          list.push(obj);
+        }
       }
     }
     return list;

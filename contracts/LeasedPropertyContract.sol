@@ -12,6 +12,7 @@ pragma solidity 0.5.0;
         bytes32 leasedByNic;
         address leasedToPkey;
         bytes32 leasedToNic;
+        uint leasedAmount;
         uint taxAmountPerYear;
         uint next;
         uint prev;
@@ -22,7 +23,7 @@ pragma solidity 0.5.0;
         event newIdEvent(uint newID);
         constructor() public {
             // sentinel
-            leasedProperties.push(LeasedProperty(0, 0, 0,0,0, address(0),0x00,address(0),0x00,0,0,0));
+            leasedProperties.push(LeasedProperty(0, 0, 0,0,0, address(0),0x00,address(0),0x00,0,0,0,0));
         }
 
 
@@ -35,6 +36,7 @@ pragma solidity 0.5.0;
         bytes32 _leasedByNic,
         address _leasedToPkey,
         bytes32 _leasedToNic,
+        uint _leasedAmount,
         uint _taxAmountPerYear) public returns (uint newID) {
 
         newID = leasedProperties.length;
@@ -49,6 +51,7 @@ pragma solidity 0.5.0;
                     leasedByNic:_leasedByNic,
                     leasedToPkey:_leasedToPkey,
                     leasedToNic:_leasedToNic,
+                    leasedAmount:_leasedAmount,
                     taxAmountPerYear:_taxAmountPerYear,
                     prev: newID-1,
                     next: 0
@@ -84,13 +87,16 @@ pragma solidity 0.5.0;
         leasedProperties[index].prev, 
         leasedProperties[index].next);
     }
- function getLeasedThird(uint index) public view returns(uint,address,bytes32,uint,uint, uint) {
+ function getLeasedThird(uint index) public view returns(uint,address,bytes32,uint,uint,uint, uint) {
         return (leasedProperties[index].id,
         leasedProperties[index].leasedToPkey,
         leasedProperties[index].leasedToNic,
+        leasedProperties[index].leasedAmount,
         leasedProperties[index].taxAmountPerYear,
         leasedProperties[index].prev, 
         leasedProperties[index].next);
     }
-     
+
+      
 }
+  
