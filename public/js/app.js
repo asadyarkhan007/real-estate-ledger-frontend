@@ -860,6 +860,32 @@ App = {
     }
     return list;
   },
+  getMutatedPropertiesForRegistrarByManagingOrgAndProperties: async function(_managingOrg,properties) {
+      let mutationListWithProperties = await App.getMutationListWithProperties();
+      let mutatedProperties = [];
+      for(let i =0 ; i < mutationListWithProperties.length; i++){
+              let obj = App.findOffChainProperty(properties,
+              mutationListWithProperties[i].property.propertyOffChainId);
+              if(obj != null  && mutationListWithProperties[i].property.managingOrg === _managingOrg.toLowerCase()
+                && mutationListWithProperties[i].latest === 1){
+              obj.mutatedProperty = mutationListWithProperties[i];
+              mutatedProperties.push(obj);            
+              }
+      }
+      return mutatedProperties;      
+  },
+   getMutatedPropertiesForRegistrarByManagingOrg: async function(_managingOrg) {
+      let mutationListWithProperties = await App.getMutationListWithProperties();
+      let mutatedProperties = [];
+      for(let i =0 ; i < mutationListWithProperties.length; i++){
+              let obj =  mutationListWithProperties[i];
+              if(mutationListWithProperties[i].property.managingOrg === _managingOrg.toLowerCase()
+                && mutationListWithProperties[i].latest === 1){
+              mutatedProperties.push(obj);            
+              }
+      }
+      return mutatedProperties;      
+  },
   getMutatedPropertiesForRegistrarByOffchainProperties: async function(properties) {
       let mutationListWithProperties = await App.getMutationListWithProperties();
       let mutatedProperties = [];
