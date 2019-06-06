@@ -267,6 +267,21 @@ App = {
       return null;
     });
   },
+  getOwnershipOfPropertyByOffChainPropertyId: async function(_OffChainPropertyId) {
+
+    return App.getPropertyList().then(function(list) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].propertyOffChainId === _OffChainPropertyId) {
+          let obj = list[i];
+         return App.getMutationAndSaleAndSignDeedByPropertyId(obj.id).then(function(_mutationList){
+          obj.mutationList = _mutationList;
+          return obj;
+         });      
+        }
+      }
+      return null;
+    });
+  },
    insertPropertyDataIfNotExist: async function(
     _propertyOffChainId,
     _areaSqYards,
@@ -368,7 +383,7 @@ App = {
         return JSON.parse(size) - 1;
       });
   },
-  getDeedDetail: function(id) {
+  getDeedDetail: async function(id) {
     return App.deployedContracts.deedContract
       .getDeedFirst(id)
       .then(function(_firstData) {
@@ -583,7 +598,7 @@ App = {
         return JSON.parse(size) - 1;
       });
   },
-  getSignDeedDetail: function(id) {
+  getSignDeedDetail: async function(id) {
     return App.deployedContracts.signDeedContract
       .getSignDeedFirst(id)
       .then(function(_firstData) {
@@ -605,6 +620,15 @@ App = {
                 };
               });
           });
+  },
+  getSignDeedWithDeedAndPropertyBySignDeedId: async function(_signDeed){
+    let obj = await App.getSignDeedDetail(_signDeed);
+    if(obj!= null){
+      obj.deed = await App.getDeedDetail(obj.deedId);
+      obj.property =  await App.getPropertyDetail(obj.propertyId);
+      return obj;
+    }
+    return obj;
   },
   getSignDeedList: async function() {
     let list = [];
@@ -678,12 +702,14 @@ App = {
         list[i].signDeed.verified === 0 && list[i].signDeed.sellerSignature === "0x"){        
         let obj =list[i]; 
         obj.pendingAs="seller";
+        obj.property = await App.getPropertyDetail(obj.propertyId);
         list[i] = obj;
         pendingList.push(list[i]);
       }else if(list[i].buyerNic === _nic && list[i].signDeed != null && 
         list[i].signDeed.verified === 0 && list[i].signDeed.buyerSignature === "0x"){      
         let obj =list[i]; 
         obj.pendingAs="buyer";
+        obj.property = await App.getPropertyDetail(obj.propertyId);
         list[i] = obj;
         pendingList.push(list[i]);
       }
@@ -736,9 +762,12 @@ App = {
     _signDeedId,
     _propertyId,
     _mutatedOn,
-    _mutatedBy,
+    _mutatedByPkey,
+    _mutatedByNic,
+    _mutatedByFullName,
     _newOwnerPkey,
     _newOwnerNic,
+    _newOwnerFullName,
     _fromAddress,
     _gas
   ) {
@@ -747,9 +776,12 @@ App = {
         _signDeedId,
         _propertyId,
         _mutatedOn,
-        _mutatedBy,
+        _mutatedByPkey,
+        App.convertToBytes(_mutatedByNic),
+        App.convertToBytes(_mutatedByFullName),
         _newOwnerPkey,
-         App.convertToBytes(_newOwnerNic),
+        App.convertToBytes(_newOwnerNic),
+        App.convertToBytes(_newOwnerFullName),         
         { from: _fromAddress, gas: _gas }
       )
       .then(function(response) {
@@ -761,9 +793,12 @@ App = {
     _signDeedId,
     _propertyId,
     _mutatedOn,
-    _mutatedBy,
+    _mutatedByPkey,
+    _mutatedByNic,
+    _mutatedByFullName,
     _newOwnerPkey,
     _newOwnerNic,
+    _newOwnerFullName,
     _fromAddress,
     _gas
   ) {
@@ -785,9 +820,12 @@ App = {
         _signDeedId,
         _propertyId,
         _mutatedOn,
-        _mutatedBy,
+        _mutatedByPkey,
+        App.convertToBytes(_mutatedByNic),
+        App.convertToBytes(_mutatedByFullName),
         _newOwnerPkey,
-         App.convertToBytes(_newOwnerNic),
+        App.convertToBytes(_newOwnerNic),
+        App.convertToBytes(_newOwnerFullName),        
         { from: _fromAddress, gas: _gas }
       )
       .then(function(response) {
@@ -819,19 +857,27 @@ App = {
           .getMutationSecond(id)
           .then(function(_secondData) {
             let secondData = _secondData;
-            return {
-              id: App.transformValue(firstData[0]),
-              signDeedId: App.transformValue(firstData[1]),
-              propertyId: App.transformValue(firstData[2]),
-              mutatedOn: App.transformValue(firstData[3]),
-              latest: App.transformValue(firstData[4]),
-              mutatedBy: secondData[1].substring(0, 42),
-              newOwnerPkey: secondData[2].substring(0, 42),
-              newOwnerNic: App.transformValue(secondData[3]),
-              prevId: App.transformValue(secondData[4]),
-              nextId: App.transformValue(secondData[5])
-            };
-          });
+             return App.deployedContracts.mutationContract
+              .getMutationThird(id)
+              .then(function(_thirdData) {
+                let thirdData = _thirdData;
+                return {
+                  id: App.transformValue(firstData[0]),
+                  signDeedId: App.transformValue(firstData[1]),
+                  propertyId: App.transformValue(firstData[2]),
+                  mutatedOn: App.transformValue(firstData[3]),
+                  latest: App.transformValue(firstData[4]),
+                  mutatedByPkey: secondData[1].substring(0, 42),
+                  mutatedByNic: App.transformValue(secondData[2]),
+                  mutatedByFullName: App.transformValue(secondData[3]),
+                  newOwnerPkey: thirdData[1].substring(0, 42),
+                  newOwnerNic: App.transformValue(thirdData[2]),
+                  newOwnerFullName: App.transformValue(thirdData[3]),
+                  prevId: App.transformValue(thirdData[4]),
+                  nextId: App.transformValue(thirdData[5])
+                };
+              });
+            });
       });
   },
   getMutationList: async function() {
@@ -881,7 +927,9 @@ App = {
               let obj =  mutationListWithProperties[i];
               if(mutationListWithProperties[i].property.managingOrg === _managingOrg.toLowerCase()
                 && mutationListWithProperties[i].latest === 1){
-              mutatedProperties.push(obj);            
+              obj.signDeed = await App.getSignDeedDetail(mutationListWithProperties[i].signDeedId);
+              obj.deed = await App.getDeedDetail(obj.signDeed.deedId);          
+              mutatedProperties.push(obj);
               }
       }
       return mutatedProperties;      
@@ -948,6 +996,27 @@ App = {
       }
       return null;
     });
+  },
+  getMutationAndSaleAndSignDeedByPropertyId: async function(_propertyId) {
+
+      let list =  await App.getMutationList();
+      let propertyMutationHistory = [];
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].propertyId === _propertyId ) {
+          let obj = {};
+          obj.mutation = list[i];
+          obj.signDeed = await App.getSignDeedDetail(obj.mutation.signDeedId);
+          obj.deed = await App.getDeedDetail(obj.signDeed.deedId);
+          obj.leasedProperty = await App.getLeasedPropertyByMutationId(obj.mutation.id);
+          if(obj.leasedProperty !== null){
+          obj.leasedPropertyTax = await App.getLeasedPropertyTaxListByLeasedPropertyId(obj.leasedProperty.id);
+          }else{
+             obj.leasedPropertyTax = [];
+          }
+          propertyMutationHistory.push(obj);
+        }
+      }
+      return propertyMutationHistory.sort((a,b) => b.mutation.mutatedOn - a.mutation.mutatedOn);
   },
   getLatestMutationByOffChainPropertyId: async function(_offChainPropertyId) {
     let length = await App.getMutationCount();
@@ -1162,6 +1231,20 @@ App = {
       while (obj.nextId != 0) {
         obj = await App.getLeasedPropertyTaxDetail(obj.nextId);
         list.push(obj);
+      }
+    }
+    return list;
+  },
+   getLeasedPropertyTaxListByLeasedPropertyId: async function(_leasePropertyId) {
+    let list = [];
+    let length = await App.getLeasedPropertyTaxCount();
+    if (length > 0) {
+      let obj = await App.getLeasedPropertyTaxDetail(0);
+      while (obj.nextId != 0) {
+        if(obj.leasePropertyId === _leasePropertyId){
+        obj = await App.getLeasedPropertyTaxDetail(obj.nextId);
+        list.push(obj);
+         }
       }
     }
     return list;

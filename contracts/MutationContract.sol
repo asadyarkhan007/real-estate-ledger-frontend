@@ -8,9 +8,12 @@ pragma solidity 0.5.0;
         uint propertyId;
         uint mutatedOn;
         uint latest;
-        address mutatedBy;
+        address mutatedByPkey;
+        bytes32 mutatedByNic;
+        bytes32 mutatedByFullName;
         address newOwnerPkey;
         bytes32 newOwnerNic;
+        bytes32 newOwnerFullName;
         uint next;
         uint prev;
     }
@@ -21,7 +24,7 @@ pragma solidity 0.5.0;
         event updateMutationUpdateIdEvent(uint updatedId);
         constructor() public {
             // sentinel
-            mutations.push(Mutation(0,0,0,0,0,address(0),address(0),0x00,0,0));
+            mutations.push(Mutation(0,0,0,0,0,address(0),0x00,0x00,address(0),0x00,0x00,0,0));
         }
 
 
@@ -29,9 +32,12 @@ pragma solidity 0.5.0;
         uint _signDeedId,
         uint _propertyId,
         uint _mutatedOn,
-        address _mutatedBy,
+        address _mutatedByPkey,
+        bytes32 _mutatedByNic,
+        bytes32 _mutatedByFullName,
         address _newOwnerPkey,
-        bytes32 _newOwnerNic) public returns (uint newID) {
+        bytes32 _newOwnerNic,
+        bytes32 _newOwnerFullName) public returns (uint newID) {
 
         newID = mutations.length;
 
@@ -41,9 +47,12 @@ pragma solidity 0.5.0;
                     propertyId: _propertyId,
                     mutatedOn:_mutatedOn,
                     latest:1,
-                    mutatedBy:_mutatedBy,
-                    newOwnerPkey:_newOwnerPkey,
-                    newOwnerNic:_newOwnerNic,
+                    mutatedByPkey: _mutatedByPkey,
+                    mutatedByNic: _mutatedByNic,
+                    mutatedByFullName: _mutatedByFullName,
+                    newOwnerPkey: _newOwnerPkey,
+                    newOwnerNic: _newOwnerNic,
+                    newOwnerFullName: _newOwnerFullName,
                     prev: newID-1,
                     next: 0
         }));
@@ -81,11 +90,21 @@ pragma solidity 0.5.0;
         mutations[index].next);
     }
    function getMutationSecond(uint index) public view returns(uint,
-        address,address,bytes32,uint, uint) {
+        address,bytes32,bytes32,uint, uint) {
         return (mutations[index].id, 
-        mutations[index].mutatedBy,
+        mutations[index].mutatedByPkey,
+        mutations[index].mutatedByNic,
+        mutations[index].mutatedByFullName,
+        mutations[index].prev, 
+        mutations[index].next);
+    }
+    
+    function getMutationThird(uint index) public view returns(uint,
+        address,bytes32,bytes32,uint, uint) {
+        return (mutations[index].id, 
         mutations[index].newOwnerPkey,
         mutations[index].newOwnerNic,
+        mutations[index].newOwnerFullName,
         mutations[index].prev, 
         mutations[index].next);
     }

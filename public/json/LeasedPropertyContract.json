@@ -227,10 +227,6 @@
         {
           "name": "",
           "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "uint256"
         }
       ],
       "payable": false,
@@ -500,7 +496,6 @@
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "269:7:2",
-                  "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -527,11 +522,11 @@
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "299:7:2",
+                  "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
-                  },
-                  "stateMutability": "nonpayable"
+                  }
                 },
                 "value": null,
                 "visibility": "internal"
@@ -942,80 +937,24 @@
                           },
                           {
                             "argumentTypes": null,
-                            "arguments": [
-                              {
-                                "argumentTypes": null,
-                                "hexValue": "30",
-                                "id": 431,
-                                "isConstant": false,
-                                "isLValue": false,
-                                "isPure": true,
-                                "kind": "number",
-                                "lValueRequested": false,
-                                "nodeType": "Literal",
-                                "src": "644:1:2",
-                                "subdenomination": null,
-                                "typeDescriptions": {
-                                  "typeIdentifier": "t_rational_0_by_1",
-                                  "typeString": "int_const 0"
-                                },
-                                "value": "0"
-                              }
-                            ],
-                            "expression": {
-                              "argumentTypes": [
-                                {
-                                  "typeIdentifier": "t_rational_0_by_1",
-                                  "typeString": "int_const 0"
-                                }
-                              ],
-                              "id": 430,
-                              "isConstant": false,
-                              "isLValue": false,
-                              "isPure": true,
-                              "lValueRequested": false,
-                              "nodeType": "ElementaryTypeNameExpression",
-                              "src": "636:7:2",
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_address_$",
-                                "typeString": "type(address)"
-                              },
-                              "typeName": "address"
-                            },
+                            "hexValue": "30783030",
                             "id": 436,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
-                            "names": [],
                             "nodeType": "Literal",
                             "src": "732:4:2",
+                            "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
                             },
-                            "hexValue": "30783030",
-                            "subdenomination": null,
                             "value": "0x00"
                           },
                           {
                             "argumentTypes": null,
-                            "hexValue": "30",
-                            "id": 439,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "typeConversion",
-                            "lValueRequested": false,
-                            "nodeType": "FunctionCall",
-                            "src": "737:10:2",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_address_payable",
-                              "typeString": "address payable"
-                            },
-                            "value": "0",
                             "arguments": [
                               {
                                 "argumentTypes": null,
@@ -1056,7 +995,19 @@
                               },
                               "typeName": "address"
                             },
-                            "names": []
+                            "id": 439,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "typeConversion",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "737:10:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address_payable",
+                              "typeString": "address payable"
+                            }
                           },
                           {
                             "argumentTypes": null,
@@ -1490,152 +1441,54 @@
                           },
                           {
                             "argumentTypes": null,
-                            "commonType": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            },
                             "id": 491,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": false,
-                            "lValueRequested": false,
-                            "leftExpression": {
-                              "argumentTypes": null,
-                              "id": 476,
-                              "name": "newID",
-                              "nodeType": "Identifier",
-                              "overloadedDeclarations": [],
-                              "referencedDeclaration": 457,
-                              "src": "1537:5:2",
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_uint256",
-                                "typeString": "uint256"
-                              }
-                            },
+                            "name": "_leasedToNic",
                             "nodeType": "Identifier",
-                            "operator": "-",
-                            "rightExpression": {
-                              "argumentTypes": null,
-                              "hexValue": "31",
-                              "id": 477,
-                              "isConstant": false,
-                              "isLValue": false,
-                              "isPure": true,
-                              "kind": "number",
-                              "lValueRequested": false,
-                              "nodeType": "Literal",
-                              "src": "1543:1:2",
-                              "subdenomination": null,
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_rational_1_by_1",
-                                "typeString": "int_const 1"
-                              },
-                              "value": "1"
-                            },
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 465,
                             "src": "1756:12:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
                               "typeString": "bytes32"
-                            },
-                            "name": "_leasedToNic",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 465
+                            }
                           },
                           {
                             "argumentTypes": null,
-                            "hexValue": "30",
                             "id": 492,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "number",
-                            "lValueRequested": false,
+                            "name": "_leasedAmount",
                             "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 467,
                             "src": "1804:13:2",
-                            "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
-                            },
-                            "value": "0",
-                            "name": "_leasedAmount",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 467
+                            }
                           },
                           {
                             "argumentTypes": null,
-                            "commonType": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            },
                             "id": 493,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": false,
-                            "lValueRequested": false,
-                            "leftExpression": {
-                              "argumentTypes": null,
-                              "id": 488,
-                              "name": "newID",
-                              "nodeType": "Identifier",
-                              "overloadedDeclarations": [],
-                              "referencedDeclaration": 467,
-                              "src": "1795:5:2",
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_uint256",
-                                "typeString": "uint256"
-                              }
-                            },
+                            "name": "_taxAmountPerYear",
                             "nodeType": "Identifier",
-                            "operator": "-",
-                            "rightExpression": {
-                              "argumentTypes": null,
-                              "hexValue": "31",
-                              "id": 489,
-                              "isConstant": false,
-                              "isLValue": false,
-                              "isPure": true,
-                              "kind": "number",
-                              "lValueRequested": false,
-                              "nodeType": "Literal",
-                              "src": "1801:1:2",
-                              "subdenomination": null,
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_rational_1_by_1",
-                                "typeString": "int_const 1"
-                              },
-                              "value": "1"
-                            },
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 469,
                             "src": "1857:17:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
-                            },
-                            "name": "_taxAmountPerYear",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 469
+                            }
                           },
                           {
                             "argumentTypes": null,
-                            "hexValue": "30",
-                            "id": 496,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": false,
-                            "kind": "number",
-                            "lValueRequested": false,
-                            "nodeType": "BinaryOperation",
-                            "src": "1903:7:2",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            },
-                            "value": "0",
                             "commonType": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
+                            "id": 496,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
                             "leftExpression": {
                               "argumentTypes": null,
                               "id": 494,
@@ -1649,6 +1502,7 @@
                                 "typeString": "uint256"
                               }
                             },
+                            "nodeType": "BinaryOperation",
                             "operator": "-",
                             "rightExpression": {
                               "argumentTypes": null,
@@ -1667,6 +1521,11 @@
                                 "typeString": "int_const 1"
                               },
                               "value": "1"
+                            },
+                            "src": "1903:7:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
                             }
                           },
                           {
@@ -2124,7 +1983,6 @@
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1020:7:2",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -2151,11 +2009,11 @@
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1051:7:2",
+                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
-                    },
-                    "stateMutability": "nonpayable"
+                    }
                   },
                   "value": null,
                   "visibility": "internal"
@@ -3706,62 +3564,6 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "expression": {
-                          "argumentTypes": null,
-                          "baseExpression": {
-                            "argumentTypes": null,
-                            "id": 620,
-                            "name": "leasedProperties",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 409,
-                            "src": "2831:16:2",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_array$_t_struct$_LeasedProperty_$406_storage_$dyn_storage",
-                              "typeString": "struct LeasedPropertyContract.LeasedProperty storage ref[] storage ref"
-                            }
-                          },
-                          "id": 622,
-                          "indexExpression": {
-                            "argumentTypes": null,
-                            "id": 621,
-                            "name": "index",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 585,
-                            "src": "2848:5:2",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            }
-                          },
-                          "isConstant": false,
-                          "isLValue": true,
-                          "isPure": false,
-                          "lValueRequested": false,
-                          "nodeType": "IndexAccess",
-                          "src": "2831:23:2",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_LeasedProperty_$406_storage",
-                            "typeString": "struct LeasedPropertyContract.LeasedProperty storage ref"
-                          }
-                        },
-                        "id": 623,
-                        "isConstant": false,
-                        "isLValue": true,
-                        "isPure": false,
-                        "lValueRequested": false,
-                        "memberName": "next",
-                        "nodeType": "MemberAccess",
-                        "referencedDeclaration": 403,
-                        "src": "2831:28:2",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_uint256",
-                          "typeString": "uint256"
-                        }
                       }
                     ],
                     "id": 636,
@@ -3899,7 +3701,6 @@
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2938:7:2",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -3952,32 +3753,6 @@
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "2952:4:2",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 598,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 627,
-                  "src": "2591:4:2",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 597,
-                    "name": "uint",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2591:4:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -4873,7 +4648,6 @@
                   "name": "bytes32",
                   "nodeType": "ElementaryTypeName",
                   "src": "269:7:2",
-                  "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bytes32",
                     "typeString": "bytes32"
@@ -4900,11 +4674,11 @@
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "299:7:2",
+                  "stateMutability": "nonpayable",
                   "typeDescriptions": {
                     "typeIdentifier": "t_address",
                     "typeString": "address"
-                  },
-                  "stateMutability": "nonpayable"
+                  }
                 },
                 "value": null,
                 "visibility": "internal"
@@ -5315,80 +5089,24 @@
                           },
                           {
                             "argumentTypes": null,
-                            "arguments": [
-                              {
-                                "argumentTypes": null,
-                                "hexValue": "30",
-                                "id": 431,
-                                "isConstant": false,
-                                "isLValue": false,
-                                "isPure": true,
-                                "kind": "number",
-                                "lValueRequested": false,
-                                "nodeType": "Literal",
-                                "src": "644:1:2",
-                                "subdenomination": null,
-                                "typeDescriptions": {
-                                  "typeIdentifier": "t_rational_0_by_1",
-                                  "typeString": "int_const 0"
-                                },
-                                "value": "0"
-                              }
-                            ],
-                            "expression": {
-                              "argumentTypes": [
-                                {
-                                  "typeIdentifier": "t_rational_0_by_1",
-                                  "typeString": "int_const 0"
-                                }
-                              ],
-                              "id": 430,
-                              "isConstant": false,
-                              "isLValue": false,
-                              "isPure": true,
-                              "lValueRequested": false,
-                              "nodeType": "ElementaryTypeNameExpression",
-                              "src": "636:7:2",
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_type$_t_address_$",
-                                "typeString": "type(address)"
-                              },
-                              "typeName": "address"
-                            },
+                            "hexValue": "30783030",
                             "id": 436,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "number",
                             "lValueRequested": false,
-                            "names": [],
                             "nodeType": "Literal",
                             "src": "732:4:2",
+                            "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
                               "typeString": "int_const 0"
                             },
-                            "hexValue": "30783030",
-                            "subdenomination": null,
                             "value": "0x00"
                           },
                           {
                             "argumentTypes": null,
-                            "hexValue": "30",
-                            "id": 439,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "typeConversion",
-                            "lValueRequested": false,
-                            "nodeType": "FunctionCall",
-                            "src": "737:10:2",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_address_payable",
-                              "typeString": "address payable"
-                            },
-                            "value": "0",
                             "arguments": [
                               {
                                 "argumentTypes": null,
@@ -5429,7 +5147,19 @@
                               },
                               "typeName": "address"
                             },
-                            "names": []
+                            "id": 439,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "typeConversion",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "737:10:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address_payable",
+                              "typeString": "address payable"
+                            }
                           },
                           {
                             "argumentTypes": null,
@@ -5863,152 +5593,54 @@
                           },
                           {
                             "argumentTypes": null,
-                            "commonType": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            },
                             "id": 491,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": false,
-                            "lValueRequested": false,
-                            "leftExpression": {
-                              "argumentTypes": null,
-                              "id": 476,
-                              "name": "newID",
-                              "nodeType": "Identifier",
-                              "overloadedDeclarations": [],
-                              "referencedDeclaration": 457,
-                              "src": "1537:5:2",
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_uint256",
-                                "typeString": "uint256"
-                              }
-                            },
+                            "name": "_leasedToNic",
                             "nodeType": "Identifier",
-                            "operator": "-",
-                            "rightExpression": {
-                              "argumentTypes": null,
-                              "hexValue": "31",
-                              "id": 477,
-                              "isConstant": false,
-                              "isLValue": false,
-                              "isPure": true,
-                              "kind": "number",
-                              "lValueRequested": false,
-                              "nodeType": "Literal",
-                              "src": "1543:1:2",
-                              "subdenomination": null,
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_rational_1_by_1",
-                                "typeString": "int_const 1"
-                              },
-                              "value": "1"
-                            },
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 465,
                             "src": "1756:12:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
                               "typeString": "bytes32"
-                            },
-                            "name": "_leasedToNic",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 465
+                            }
                           },
                           {
                             "argumentTypes": null,
-                            "hexValue": "30",
                             "id": 492,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": true,
-                            "kind": "number",
-                            "lValueRequested": false,
+                            "name": "_leasedAmount",
                             "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 467,
                             "src": "1804:13:2",
-                            "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
-                            },
-                            "value": "0",
-                            "name": "_leasedAmount",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 467
+                            }
                           },
                           {
                             "argumentTypes": null,
-                            "commonType": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            },
                             "id": 493,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": false,
-                            "lValueRequested": false,
-                            "leftExpression": {
-                              "argumentTypes": null,
-                              "id": 488,
-                              "name": "newID",
-                              "nodeType": "Identifier",
-                              "overloadedDeclarations": [],
-                              "referencedDeclaration": 467,
-                              "src": "1795:5:2",
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_uint256",
-                                "typeString": "uint256"
-                              }
-                            },
+                            "name": "_taxAmountPerYear",
                             "nodeType": "Identifier",
-                            "operator": "-",
-                            "rightExpression": {
-                              "argumentTypes": null,
-                              "hexValue": "31",
-                              "id": 489,
-                              "isConstant": false,
-                              "isLValue": false,
-                              "isPure": true,
-                              "kind": "number",
-                              "lValueRequested": false,
-                              "nodeType": "Literal",
-                              "src": "1801:1:2",
-                              "subdenomination": null,
-                              "typeDescriptions": {
-                                "typeIdentifier": "t_rational_1_by_1",
-                                "typeString": "int_const 1"
-                              },
-                              "value": "1"
-                            },
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 469,
                             "src": "1857:17:2",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
-                            },
-                            "name": "_taxAmountPerYear",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 469
+                            }
                           },
                           {
                             "argumentTypes": null,
-                            "hexValue": "30",
-                            "id": 496,
-                            "isConstant": false,
-                            "isLValue": false,
-                            "isPure": false,
-                            "kind": "number",
-                            "lValueRequested": false,
-                            "nodeType": "BinaryOperation",
-                            "src": "1903:7:2",
-                            "subdenomination": null,
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            },
-                            "value": "0",
                             "commonType": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
+                            "id": 496,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
                             "leftExpression": {
                               "argumentTypes": null,
                               "id": 494,
@@ -6022,6 +5654,7 @@
                                 "typeString": "uint256"
                               }
                             },
+                            "nodeType": "BinaryOperation",
                             "operator": "-",
                             "rightExpression": {
                               "argumentTypes": null,
@@ -6040,6 +5673,11 @@
                                 "typeString": "int_const 1"
                               },
                               "value": "1"
+                            },
+                            "src": "1903:7:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
                             }
                           },
                           {
@@ -6497,7 +6135,6 @@
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "1020:7:2",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -6524,11 +6161,11 @@
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1051:7:2",
+                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
-                    },
-                    "stateMutability": "nonpayable"
+                    }
                   },
                   "value": null,
                   "visibility": "internal"
@@ -8079,62 +7716,6 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "expression": {
-                          "argumentTypes": null,
-                          "baseExpression": {
-                            "argumentTypes": null,
-                            "id": 620,
-                            "name": "leasedProperties",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 409,
-                            "src": "2831:16:2",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_array$_t_struct$_LeasedProperty_$406_storage_$dyn_storage",
-                              "typeString": "struct LeasedPropertyContract.LeasedProperty storage ref[] storage ref"
-                            }
-                          },
-                          "id": 622,
-                          "indexExpression": {
-                            "argumentTypes": null,
-                            "id": 621,
-                            "name": "index",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 585,
-                            "src": "2848:5:2",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_uint256",
-                              "typeString": "uint256"
-                            }
-                          },
-                          "isConstant": false,
-                          "isLValue": true,
-                          "isPure": false,
-                          "lValueRequested": false,
-                          "nodeType": "IndexAccess",
-                          "src": "2831:23:2",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_LeasedProperty_$406_storage",
-                            "typeString": "struct LeasedPropertyContract.LeasedProperty storage ref"
-                          }
-                        },
-                        "id": 623,
-                        "isConstant": false,
-                        "isLValue": true,
-                        "isPure": false,
-                        "lValueRequested": false,
-                        "memberName": "next",
-                        "nodeType": "MemberAccess",
-                        "referencedDeclaration": 403,
-                        "src": "2831:28:2",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_uint256",
-                          "typeString": "uint256"
-                        }
                       }
                     ],
                     "id": 636,
@@ -8272,7 +7853,6 @@
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
                     "src": "2938:7:2",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -8325,32 +7905,6 @@
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "2952:4:2",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                },
-                {
-                  "constant": false,
-                  "id": 598,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 627,
-                  "src": "2591:4:2",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 597,
-                    "name": "uint",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "2591:4:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -9042,12 +8596,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x58A745898c40187a7B45B4580c4e536Bcff5d523",
-      "transactionHash": "0xed6bc337489d89384292f5c7fe4fb7cfb355ebad13010378b360de989bd5f2a2"
+      "address": "0xf5439F38d32B65a945ABA58334762414A92f98FC",
+      "transactionHash": "0x64956ce2edab58b3c4b1e447ddd118d4623326e25b7c21943760023947e4ae18"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-06-05T19:53:03.474Z",
+  "updatedAt": "2019-06-06T16:54:12.003Z",
   "devdoc": {
     "methods": {}
   },
