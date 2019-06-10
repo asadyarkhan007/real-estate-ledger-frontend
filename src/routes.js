@@ -11,6 +11,7 @@ import RegisterPage from "views/Pages/RegisterPage.jsx";
 import RegularForms from "views/Forms/RegularForms.jsx";
 import MainWork from "./views/Misc/MainWork";
 import PropertyForm from "views/Forms/PropertyForm.jsx";
+import ManagingOrg from "views/Tables/ManagingOrg.jsx";
 import UserProfile from "./views/Pages/UserProfile.jsx";
 import ValidationForms from "views/Forms/ValidationForms.jsx";
 import VectorMap from "views/Maps/VectorMap.jsx";
@@ -28,6 +29,18 @@ import SaleDeedForm from "./views/Forms/ProcessForms/SaleDeedForm";
 import MutationForm from "./views/Forms/ProcessForms/MutationForm";
 import LeaseForm from "./views/Forms/ProcessForms/LeaseForm";
 import TaxForm from "./views/Forms/ProcessForms/TaxForm";
+import ManagingOrgForm from "./views/Forms/ManagingOrgForm";
+import AllRegistrar from "./views/Tables/AllRegistrar";
+import CreateRegistrarForm from "./views/Forms/CreateRegistrarForm";
+import PendingDeedTable from "./views/Tables/PendingDeedTable";
+import DeedDetailComponent from "./views/Forms/PropertyForms/DeedDetailComponent";
+import PendingMutationTable from "./views/Tables/PendingMutationTable";
+import PendingMutationDetail from "./views/Forms/PropertyForms/PendingMutationDetail";
+import MutatedPropertiesTable from "./views/Tables/MutatedPropertiesTable";
+import MutatedPropertyDetail from "./views/Forms/PropertyForms/MutatedPropertyDetail";
+import OwnProperties from "./views/Tables/OwnProperties";
+import SaleDeedUserForm from "./views/Forms/ProcessForms/SaleDeedUserForm";
+import SaleDeedOnUserBehalfForm from "./views/Forms/ProcessForms/SaleDeedOnUserBehalfForm";
 
 var dashRoutes = [
   {
@@ -36,7 +49,7 @@ var dashRoutes = [
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
-    layout: "/admin"
+    layout: "/registrar"
   },
   {
     path: "/dashboard",
@@ -44,265 +57,315 @@ var dashRoutes = [
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
-    layout: "/non-user"
+    layout: "/visitor"
   },
   {
-    collapse: true,
-    name: "Pages",
-    rtlName: "صفحات",
-    icon: Image,
-    state: "pageCollapse",
-    views: [
-      {
-        path: "/login-page",
-        name: "Login",
-        rtlName: "هعذاتسجيل الدخول",
-        mini: "L",
-        rtlMini: "هعذا",
-        component: LoginPage,
-        layout: "/auth"
-      },
-      {
-        path: "/register-page",
-        name: "Register Page",
-        rtlName: "تسجيل",
-        mini: "R",
-        rtlMini: "صع",
-        component: RegisterPage,
-        layout: "/auth"
-      },
-      {
-        path: "/user-page",
-        name: "User Profile",
-        rtlName: "ملف تعريفي للمستخدم",
-        mini: "UP",
-        rtlMini: "شع",
-        component: UserProfile,
-        layout: "/admin"
-      },
-      {
-        path: "/error-page",
-        name: "Error Page",
-        rtlName: "صفحة الخطأ",
-        mini: "E",
-        rtlMini: "البريد",
-        component: ErrorPage,
-        layout: "/auth"
-      },
-      {
-        path: "/truffle-page",
-        name: "Truffle Page",
-        rtlName: "صفحة الخطأ",
-        mini: "E",
-        rtlMini: "البريد",
-        component: TrufflePage,
-        layout: "/auth"
-      }
-    ]
+    path: "/dashboard",
+    name: "Property",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: Dashboard,
+    layout: "/user"
   },
   {
-    collapse: true,
-    name: "Forms",
-    rtlName: "إستمارات",
-    icon: "content_paste",
-    state: "formsCollapse",
-    views: [
-      {
-        path: "/regular-forms",
-        name: "Regular Forms",
-        rtlName: "أشكال عادية",
-        mini: "RF",
-        rtlMini: "صو",
-        component: RegularForms,
-        layout: "/admin"
-      },
-      {
-        path: "/main-work",
-        name: "Computation",
-        rtlName: "أشكال عادية",
-        mini: "MW",
-        rtlMini: "صو",
-        component: MainWork,
-        layout: "/admin"
-      },
-      {
-        path: "/property-form/:id",
-        name: "Property Form",
-        rtlName: "أشكال عادية",
-        mini: "RF",
-        rtlMini: "صو",
-        component: PropertyForm,
-        layout: "/admin"
-      },
-      {
-        path: "/property-form/:id",
-        name: "Property Form",
-        rtlName: "أشكال عادية",
-        mini: "RF",
-        rtlMini: "صو",
-        component: PropertyForm,
-        layout: "/non-user"
-      },
-      {
-        path: "/property-form",
-        name: "Property Form",
-        rtlName: "أشكال عادية",
-        mini: "RF",
-        rtlMini: "صو",
-        component: PropertyForm,
-        layout: "/admin"
-      },
-      {
-        path: "/sales-deed",
-        name: "Sales deed",
-        rtlName: "أشكال عادية",
-        mini: "SD",
-        rtlMini: "صو",
-        component: SaleDeedForm,
-        layout: "/admin"
-      },
-      {
-        path: "/mutation",
-        name: "Mutation",
-        rtlName: "أشكال عادية",
-        mini: "MT",
-        rtlMini: "صو",
-        component: MutationForm,
-        layout: "/admin"
-      },
-      {
-        path: "/lease",
-        name: "Lease",
-        rtlName: "أشكال عادية",
-        mini: "MT",
-        rtlMini: "صو",
-        component: LeaseForm,
-        layout: "/admin"
-      },
-      {
-        path: "/tax",
-        name: "Tax",
-        rtlName: "أشكال عادية",
-        mini: "MT",
-        rtlMini: "صو",
-        component: TaxForm,
-        layout: "/admin"
-      },
-      {
-        path: "/property-form",
-        name: "Property Form",
-        rtlName: "أشكال عادية",
-        mini: "RF",
-        rtlMini: "صو",
-        component: PropertyForm,
-        layout: "/non-user"
-      },
-      {
-        path: "/extended-forms",
-        name: "Extended Forms",
-        rtlName: "نماذج موسعة",
-        mini: "EF",
-        rtlMini: "هوو",
-        component: ExtendedForms,
-        layout: "/admin"
-      },
-      {
-        path: "/validation-forms",
-        name: "Validation Forms",
-        rtlName: "نماذج التحقق من الصحة",
-        mini: "VF",
-        rtlMini: "تو",
-        component: ValidationForms,
-        layout: "/admin"
-      },
-      {
-        path: "/wizard",
-        name: "Wizard",
-        rtlName: "ساحر",
-        mini: "W",
-        rtlMini: "ث",
-        component: Wizard,
-        layout: "/admin"
-      }
-    ]
-  },
-  {
-    collapse: true,
-    name: "Tables",
-    rtlName: "الجداول",
-    icon: GridOn,
-    state: "tablesCollapse",
-    views: [
-      {
-        path: "/react-tables",
-        name: "React Tables",
-        rtlName: "رد فعل الطاولة",
-        mini: "RT",
-        rtlMini: "در",
-        component: ReactTables,
-        layout: "/admin"
-      }
-    ]
-  },
-  {
-    collapse: true,
-    name: "Maps",
-    rtlName: "خرائط",
-    icon: Place,
-    state: "mapsCollapse",
-    views: [
-      {
-        path: "/google-maps",
-        name: "Google Maps",
-        rtlName: "خرائط جوجل",
-        mini: "GM",
-        rtlMini: "زم",
-        component: GoogleMaps,
-        layout: "/admin"
-      },
-      {
-        path: "/full-screen-maps",
-        name: "Full Screen Map",
-        rtlName: "خريطة كاملة الشاشة",
-        mini: "FSM",
-        rtlMini: "ووم",
-        component: FullScreenMap,
-        layout: "/admin"
-      },
-      {
-        path: "/vector-maps",
-        name: "Vector Map",
-        rtlName: "خريطة المتجه",
-        mini: "VM",
-        rtlMini: "تم",
-        component: VectorMap,
-        layout: "/admin"
-      }
-    ]
-  },
-  {
-    path: "/widgets",
-    name: "Widgets",
-    rtlName: "الحاجيات",
-    icon: WidgetsIcon,
-    component: Widgets,
+    path: "/dashboard",
+    name: "Managing Org",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: ManagingOrg,
     layout: "/admin"
   },
   {
-    path: "/charts",
-    name: "Charts",
-    rtlName: "الرسوم البيانية",
-    icon: Timeline,
-    component: Charts,
+    path: "/all-registrar",
+    name: "All Registrar",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: AllRegistrar,
     layout: "/admin"
   },
   {
-    path: "/calendar",
-    name: "Calendar",
-    rtlName: "التقويم",
-    icon: DateRange,
-    component: Calendar,
+    path: "/create-registrar",
+    name: "Create Registrar",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: CreateRegistrarForm,
     layout: "/admin"
+  },
+  {
+    path: "/managing-org/:id",
+    name: "Organization",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: ManagingOrgForm,
+    layout: "/admin"
+  },
+  {
+    path: "/registrar/:id",
+    name: "Registrar",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: CreateRegistrarForm,
+    layout: "/admin"
+  },
+  {
+    path: "/managing-org-add",
+    name: "Managing Organizations",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: ManagingOrgForm,
+    layout: "/admin"
+  },
+  {
+    path: "/login",
+    name: "Login",
+    rtlName: "هعذاتسجيل الدخول",
+    mini: "L",
+    rtlMini: "هعذا",
+    component: LoginPage,
+    layout: "/auth"
+  },
+  {
+    path: "/register-page",
+    name: "Register Page",
+    rtlName: "تسجيل",
+    mini: "R",
+    rtlMini: "صع",
+    component: RegisterPage,
+    layout: "/auth"
+  },
+  {
+    path: "/user-page",
+    name: "User Profile",
+    rtlName: "ملف تعريفي للمستخدم",
+    mini: "UP",
+    rtlMini: "شع",
+    component: UserProfile,
+    layout: "/user"
+  },
+  {
+    path: "/own-properties",
+    name: "Own Properties",
+    rtlName: "ملف تعريفي للمستخدم",
+    mini: "UP",
+    rtlMini: "شع",
+    component: OwnProperties,
+    layout: "/user"
+  },
+  {
+    path: "/mutated-property-detail/:id",
+    name: "Mutated Property Detail",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: MutatedPropertyDetail,
+    layout: "/user"
+  },
+  {
+    path: "/pending-deed",
+    name: "Pending Deed Signature",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingDeedTable,
+    layout: "/user"
+  },
+  {
+    path: "/deed/:id",
+    name: "Pending Deed Signature",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: DeedDetailComponent,
+    layout: "/user"
+  },
+  {
+    path: "/sale-deed",
+    name: "Sales Deed",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: SaleDeedUserForm,
+    layout: "/user"
+  },
+  {
+    path: "/user-page",
+    name: "User Profile",
+    rtlName: "ملف تعريفي للمستخدم",
+    mini: "UP",
+    rtlMini: "شع",
+    component: UserProfile,
+    layout: "/registrar"
+  },
+  {
+    path: "/user-page",
+    name: "User Profile",
+    rtlName: "ملف تعريفي للمستخدم",
+    mini: "UP",
+    rtlMini: "شع",
+    component: UserProfile,
+    layout: "/admin"
+  },
+  {
+    path: "/user-page",
+    name: "User Profile",
+    rtlName: "ملف تعريفي للمستخدم",
+    mini: "UP",
+    rtlMini: "شع",
+    component: UserProfile,
+    layout: "/user"
+  },
+  {
+    path: "/error-page",
+    name: "Error Page",
+    rtlName: "صفحة الخطأ",
+    mini: "E",
+    rtlMini: "البريد",
+    component: ErrorPage,
+    layout: "/auth"
+  },
+  {
+    path: "/property-form",
+    name: "Property Form",
+    rtlName: "أشكال عادية",
+    mini: "RF",
+    rtlMini: "صو",
+    component: PropertyForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/property/:id",
+    name: "Property Form",
+    rtlName: "أشكال عادية",
+    mini: "RF",
+    rtlMini: "صو",
+    component: PropertyForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/property/:id",
+    name: "Property Form",
+    rtlName: "أشكال عادية",
+    mini: "RF",
+    rtlMini: "صو",
+    component: PropertyForm,
+    layout: "/user"
+  },
+  {
+    path: "/property-form/:id",
+    name: "Property Form",
+    rtlName: "أشكال عادية",
+    mini: "RF",
+    rtlMini: "صو",
+    component: PropertyForm,
+    layout: "/visitor"
+  },
+  {
+    path: "/property-form/:id",
+    name: "Property Form",
+    rtlName: "أشكال عادية",
+    mini: "RF",
+    rtlMini: "صو",
+    component: PropertyForm,
+    layout: "/user"
+  },
+  {
+    path: "/sales-deed",
+    name: "Sales deed",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: SaleDeedForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/pending-deed",
+    name: "Pending Deed Signature",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingDeedTable,
+    layout: "/registrar"
+  },
+  {
+    path: "/deed/:id",
+    name: "Pending Deed Signature",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: DeedDetailComponent,
+    layout: "/registrar"
+  },
+  {
+    path: "/pending-mutation",
+    name: "Pending Mutations",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingMutationTable,
+    layout: "/registrar"
+  },
+  {
+    path: "/mutated-properties",
+    name: "Mutated Properties",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: MutatedPropertiesTable,
+    layout: "/registrar"
+  },
+  {
+    path: "/mutated-property-detail/:id",
+    name: "Mutated Property Detail",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: MutatedPropertyDetail,
+    layout: "/registrar"
+  },
+  {
+    path: "/mutation/:id",
+    name: "Mutation Detail",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingMutationDetail,
+    layout: "/registrar"
+  },
+  {
+    path: "/mutation",
+    name: "Mutation",
+    rtlName: "أشكال عادية",
+    mini: "MT",
+    rtlMini: "صو",
+    component: MutationForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/lease",
+    name: "Lease",
+    rtlName: "أشكال عادية",
+    mini: "MT",
+    rtlMini: "صو",
+    component: LeaseForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/tax",
+    name: "Tax",
+    rtlName: "أشكال عادية",
+    mini: "MT",
+    rtlMini: "صو",
+    component: TaxForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/user-sales-deed",
+    name: "User Sales Deed",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: SaleDeedOnUserBehalfForm,
+    layout: "/registrar"
   }
 ];
 export default dashRoutes;

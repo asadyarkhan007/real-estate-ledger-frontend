@@ -13,10 +13,15 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 
 import Axios from "axios";
-import { APIURL, AREA_LIST, CITY_LIST } from "../../../constants/AppConstants";
+import {
+  APIURL,
+  AREA_LIST,
+  CITY_LIST,
+  PROVINCE_LIST
+} from "../../../constants/AppConstants";
 import withStyles from "@material-ui/core/styles/withStyles";
 import regularFormsStyle from "../../../assets/jss/material-dashboard-pro-react/views/regularFormsStyle";
-import {ROLES} from "../../../helpers/AuthHelper";
+import { ROLES } from "../../../helpers/AuthHelper";
 
 class PlotForm extends React.Component {
   constructor(props) {
@@ -29,12 +34,14 @@ class PlotForm extends React.Component {
             city: null,
             street: null,
             country: "Pakistan",
-            area: null
+            area: null,
+            province: null
           },
       sector: props.propertyData ? props.propertyData.plot.sector_id : null,
       area_in_sq_yards: props.propertyData
         ? parseInt(props.propertyData.plot.area_in_sq_yards)
         : null,
+      plot_no: props.propertyData ? props.propertyData.name : null,
       property_type_id: props.propertyType,
       property_kind_id: props.propertyKind,
       plot_id: props.propertyData ? props.propertyData.plot_id : null
@@ -59,6 +66,14 @@ class PlotForm extends React.Component {
     });
   };
 
+  handleProvince = event => {
+    const { address } = this.state;
+    address.province = event.target.value;
+    this.setState({
+      address
+    });
+  };
+
   handleStreetChange = event => {
     const { address } = this.state;
     address.street = event.target.value;
@@ -78,6 +93,12 @@ class PlotForm extends React.Component {
   handleAreaInSqYards = event => {
     this.setState({
       area_in_sq_yards: event.target.value
+    });
+  };
+
+  handlePlotNo = event => {
+    this.setState({
+      plot_no: event.target.value
     });
   };
 
@@ -162,6 +183,49 @@ class PlotForm extends React.Component {
         </GridContainer>
         <GridContainer>
           <GridItem xs={12} sm={3}>
+            <FormLabel className={classes.labelHorizontal}>Province</FormLabel>
+          </GridItem>
+          <GridItem xs={12} sm={9} md={9} lg={9}>
+            <FormControl fullWidth className={classes.selectFormControl}>
+              <Select
+                MenuProps={{
+                  className: classes.selectMenu
+                }}
+                classes={{
+                  select: classes.select
+                }}
+                value={address.province}
+                onChange={this.handleProvince}
+                inputProps={{
+                  name: "simpleSelect",
+                  id: "simple-select"
+                }}
+              >
+                <MenuItem
+                  disabled
+                  classes={{
+                    root: classes.selectMenuItem
+                  }}
+                >
+                  Choose Province
+                </MenuItem>
+                {PROVINCE_LIST.map(el => (
+                  <MenuItem
+                    classes={{
+                      root: classes.selectMenuItem,
+                      selected: classes.selectMenuItemSelected
+                    }}
+                    value={el}
+                  >
+                    {el}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </GridItem>
+        </GridContainer>
+        <GridContainer>
+          <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>Area</FormLabel>
           </GridItem>
           <GridItem xs={12} sm={9} md={9} lg={9}>
@@ -212,7 +276,7 @@ class PlotForm extends React.Component {
               Plot Area in Sq yards
             </FormLabel>
           </GridItem>
-          <GridItem xs={12} sm={9} md={9}>
+          <GridItem xs={12} sm={4} md={4}>
             <CustomInput
               id="plot_area"
               formControlProps={{
@@ -223,6 +287,19 @@ class PlotForm extends React.Component {
                 onChange: this.handleAreaInSqYards,
                 placeholder: "sq yards",
                 type: "number"
+              }}
+            />
+          </GridItem>
+          <GridItem xs={12} sm={5} md={5}>
+            <CustomInput
+              id="plot_no"
+              formControlProps={{
+                fullWidth: true
+              }}
+              inputProps={{
+                value: this.state.plot_no,
+                onChange: this.handlePlotNo,
+                placeholder: "Plot No"
               }}
             />
           </GridItem>

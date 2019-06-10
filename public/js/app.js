@@ -177,6 +177,7 @@ App = {
   // Property Crud Start
   insertPropertyData: function(
     _propertyOffChainId,
+    _propertyNo,
     _areaSqYards,
     _propertyType,
     _kind,
@@ -191,6 +192,7 @@ App = {
     return App.deployedContracts.propertyContract
       .insert(
         _propertyOffChainId,
+        App.convertToBytes(_propertyNo),
         _areaSqYards,
         App.convertToBytes(_propertyType),
         App.convertToBytes(_kind),
@@ -229,8 +231,9 @@ App = {
                 return {
                   id: App.transformValue(firstData[0]),
                   propertyOffChainId: App.transformValue(firstData[1]),
-                  areaSqYards: App.transformValue(firstData[2]),
-                  propertyType : App.transformValue(firstData[3]),
+                  propertyNo: App.transformValue(firstData[2]),
+                  areaSqYards: App.transformValue(firstData[3]),
+                  propertyType : App.transformValue(firstData[4]),
                   kind: App.transformValue(secondData[1]),
                   managingOrg: App.transformValue(secondData[2]),
                   street: App.transformValue(secondData[3]),
@@ -249,12 +252,28 @@ App = {
     let length = await App.getPropertyCount();
     if (length > 0) {
       let obj = await App.getPropertyDetail(0);
-      while (obj.nextId != 0) {
-        obj = await App.getPropertyDetail(obj.nextId);
+      while (App.transformValue(obj.nextId) != 0) {
+        obj = await App.getPropertyDetail(App.transformValue(obj.nextId));
         list.push(obj);
       }
     }
     return list;
+  },
+   getPropertyIdByOffChainPropertyId: async function(_offChainPropertyId) {
+
+    let length = await App.getPropertyCount();
+    if (length > 0) {
+      let obj = await App.deployedContracts.propertyContract
+      .getPropertyFirst(0);  
+      while (App.transformValue(obj[5]) != 0) {
+        obj = await App.deployedContracts.propertyContract
+      .getPropertyFirst(obj[5]);
+        if(App.transformValue(obj[1]) ===_offChainPropertyId){
+          return App.transformValue(obj[0]);
+        }
+      }
+    }
+    return null;
   },
   getPropertyByOffChainPropertyId: function(_OffChainPropertyId) {
 
@@ -284,6 +303,7 @@ App = {
   },
    insertPropertyDataIfNotExist: async function(
     _propertyOffChainId,
+    _propertyNo,
     _areaSqYards,
     _propertyType,
     _kind,
@@ -303,6 +323,7 @@ App = {
     return App.deployedContracts.propertyContract
       .insert(
         _propertyOffChainId,
+        App.convertToBytes(_propertyNo),
         _areaSqYards,
         App.convertToBytes(_propertyType),
         App.convertToBytes(_kind),
@@ -325,6 +346,7 @@ App = {
       if (obj != null) {
         App.insertPropertyData(      
           obj.propertyOffChainId,
+          obj.propertyNo,
           obj.areaSqYards,        
           obj.propertyType,
           obj.kind,
@@ -906,6 +928,34 @@ App = {
     }
     return list;
   },
+  getLeasableProperties: async function() {
+    let list = [];
+    let length = await App.getMutationCount();
+    if (length > 0) {
+      let obj = await App.getMutationDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getMutationDetail(obj.nextId);
+        if(obj.latest ===1){
+          obj.leasedPropertyList = await App.getLeasedPropertyListByMutationId(obj.id);
+          if(obj.leasedPropertyList.length ===0 ){
+            let property = await App.getPropertyDetail(obj.propertyId);
+            obj.property = property;
+            list.push(obj);
+          }else{
+            let result = obj.leasedPropertyList.filter(function(lease)
+            { return lease.leaseStartDate<= new Date().getTime() &&
+            lease.leaseEndDate >= new Date().getTime(); });
+            if(result == null){
+              let property = await App.getPropertyDetail(obj.propertyId);
+              obj.property = property;
+              list.push(obj);
+            }
+          }
+        }
+      }
+    }
+    return list;
+  },
   getMutatedPropertiesForRegistrarByManagingOrgAndProperties: async function(_managingOrg,properties) {
       let mutationListWithProperties = await App.getMutationListWithProperties();
       let mutatedProperties = [];
@@ -977,6 +1027,19 @@ App = {
     }
     return list;
   },
+  getMutatedOffchainPropertyIds: async function() {
+    let offchainPropertyIds = [];
+    let length = await App.getMutationCount();
+    if (length > 0) {
+      let obj = await App.getMutationDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getMutationDetail(obj.nextId);      
+          let property = await App.getPropertyDetail(obj.propertyId);
+          offchainPropertyIds.push(property.propertyOffChainId);        
+      }
+    }
+    return offchainPropertyIds;
+  },
   findOffChainProperty: function(properties, propertyOffChainId){
     for(let i =0;i<properties.length;i++){
         if(properties[i].id === propertyOffChainId){
@@ -1007,18 +1070,60 @@ App = {
           obj.mutation = list[i];
           obj.signDeed = await App.getSignDeedDetail(obj.mutation.signDeedId);
           obj.deed = await App.getDeedDetail(obj.signDeed.deedId);
-          obj.leasedProperty = await App.getLeasedPropertyByMutationId(obj.mutation.id);
-          if(obj.leasedProperty !== null){
-          obj.leasedPropertyTax = await App.getLeasedPropertyTaxListByLeasedPropertyId(obj.leasedProperty.id);
+          obj.leasedPropertyList = await App.getLeasedPropertyListByMutationId(obj.mutation.id);
+          if(obj.leasedPropertyList !== null && obj.leasedPropertyList.length >0){
+            obj.leasedPropertyTaxList = [];
+            for(let j=0;j<obj.leasedPropertyList.length;j++){
+            obj.leasedPropertyTaxList[obj.leasedPropertyList[j].id+""] = await App.getLeasedPropertyTaxListByLeasedPropertyId(obj.leasedPropertyList[j].id);
+            }
           }else{
-             obj.leasedPropertyTax = [];
+             obj.leasedPropertyTaxList = [];
           }
           propertyMutationHistory.push(obj);
         }
       }
       return propertyMutationHistory.sort((a,b) => b.mutation.mutatedOn - a.mutation.mutatedOn);
   },
-  getLatestMutationByOffChainPropertyId: async function(_offChainPropertyId) {
+   getMutationAndSaleAndSignDeedByOffChainPropertyId: async function(_offChainPropertyId) {
+
+      let list =  await App.getMutationList();
+      let propertyMutationHistory = [];
+      for (let i = 0; i < list.length; i++) {
+        let propertyId =await App.getPropertyIdByOffChainPropertyId(_offChainPropertyId);
+        if (list[i].propertyId === propertyId ) {
+          let obj = {};        
+          obj.mutation = list[i];
+          obj.signDeed = await App.getSignDeedDetail(obj.mutation.signDeedId);
+          obj.deed = await App.getDeedDetail(obj.signDeed.deedId);
+          obj.leasedPropertyList = await App.getLeasedPropertyListByMutationId(obj.mutation.id);
+          if(obj.leasedPropertyList !== null && obj.leasedPropertyList.length >0){
+            obj.leasedPropertyTaxList = [];
+            for(let j=0;j<obj.leasedPropertyList.length;j++){          
+            obj.leasedPropertyTaxList[obj.leasedPropertyList[j].id+""] = await App.getLeasedPropertyTaxListByLeasedPropertyId(obj.leasedPropertyList[j].id);
+            }
+          }else{
+             obj.leasedPropertyTaxList = [];
+          }
+          propertyMutationHistory.push(obj);
+        }
+      }
+      return propertyMutationHistory.sort((a,b) => b.mutation.mutatedOn - a.mutation.mutatedOn);
+  },
+  canCreateLease: function(latestMutation,leasedList){
+      let allowCreatingLease = true;
+      for(let i=0;i<leasedList.length;i++){
+          if(latestMutation != null && leasedList[i].mutationId === latestMutation.id &&
+              latestMutation.newOwnerNic === leasedList[i].leasedToNic && leasedList[i].leaseStartDate <= new Date().getTime()
+              &&   leasedList[i].leaseEndDate >= new Date().getTime()){
+              allowCreatingLease =false;
+              return allowCreatingLease;
+
+          }
+
+      }
+      return allowCreatingLease;
+  }
+  ,getLatestMutationByOffChainPropertyId: async function(_offChainPropertyId) {
     let length = await App.getMutationCount();
     if (length > 0) {
       let obj = await App.getMutationDetail(0);
@@ -1177,6 +1282,18 @@ App = {
       }
       return null;
     });
+  },
+
+    getLeasedPropertyListByMutationId: function(_mutationId) {
+      let leasedList=[];
+      return App.getLeasedPropertyList().then(function(list) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].mutationId === _mutationId) {          
+            leasedList.push(list[i])
+          }
+        }
+        return leasedList;
+      });
   },
 
   // Leased Property Crud End

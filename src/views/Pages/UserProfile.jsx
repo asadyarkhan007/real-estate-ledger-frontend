@@ -24,6 +24,7 @@ import userProfileStyles from "assets/jss/material-dashboard-pro-react/views/use
 import avatar from "assets/img/faces/marc.jpg";
 import Axios from "axios";
 import { APIURL } from "../../constants/AppConstants";
+import { getCurrentUser } from "../../helpers/AuthHelper";
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -36,12 +37,12 @@ class UserProfile extends React.Component {
       blockchain_key: null,
       phone_number: null
     };
-    this.user_id = JSON.parse(localStorage.getItem("user")).id;
+    this.user_id = getCurrentUser().id;
   }
 
   componentDidMount() {
     // this.prepareData(this.getData());
-    const user_id = JSON.parse(localStorage.getItem("user")).id;
+    const user_id = getCurrentUser().id;
     Axios.get(`${APIURL}/users/${user_id}`)
       .then(response => {
         this.setState({

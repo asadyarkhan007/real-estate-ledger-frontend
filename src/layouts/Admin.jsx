@@ -16,13 +16,13 @@ import Sidebar from "components/Sidebar/Sidebar.jsx";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.jsx";
 
 import routes from "routes.js";
-import { sideBar, sideBarManager } from "sidebar.js";
+import { adminSideBar } from "sidebar.js";
 
 import appStyle from "assets/jss/material-dashboard-pro-react/layouts/adminStyle.jsx";
 
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/logo-white.svg";
-import { checkUserRole, ROLES } from "../helpers/AuthHelper";
+import { checkUserRole, ROLES, getCurrentUser } from "../helpers/AuthHelper";
 
 var ps;
 
@@ -37,9 +37,7 @@ class AdminLayout extends React.Component {
       bgColor: "black",
       hasImage: true,
       fixedClasses: "dropdown",
-      user: localStorage.getItem("user")
-        ? JSON.parse(localStorage.getItem("user"))
-        : null
+      user: getCurrentUser() || null
     };
     this.resizeFunction = this.resizeFunction.bind(this);
   }
@@ -143,13 +141,12 @@ class AdminLayout extends React.Component {
         [classes.mainPanelWithPerfectScrollbar]:
           navigator.platform.indexOf("Win") > -1
       });
-    const side_bar =
-      checkUserRole() === ROLES.MANAGER ? sideBarManager : sideBar;
+    const side_bar = adminSideBar;
     return (
       <div className={classes.wrapper}>
         <Sidebar
           routes={side_bar}
-          logoText={"Property Portal"}
+          logoText={"Property management system"}
           username={this.state.user.username}
           logo={logo}
           image={this.state.image}
@@ -158,6 +155,7 @@ class AdminLayout extends React.Component {
           color={this.state.color}
           bgColor={this.state.bgColor}
           miniActive={this.state.miniActive}
+          userPageLink={"/admin/user-page"}
           {...rest}
         />
         <div className={mainPanel} ref="mainPanel">

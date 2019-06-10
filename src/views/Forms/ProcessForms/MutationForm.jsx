@@ -133,11 +133,11 @@ class MutationForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Property Id : ${el.id} => Street: ${
-                        el.plot.address.street
-                      }, Area: ${el.plot.address.area}, City: ${
-                        el.plot.address.city
-                      }`}
+                      {`Property No : ${el.propertyNo} => Property Type: ${
+                        el.propertyType
+                      } Street: ${el.plot.address.street}, Area: ${
+                        el.plot.address.area
+                      }, City: ${el.plot.address.city}`}
                     </MenuItem>
                   ))}
               </Select>

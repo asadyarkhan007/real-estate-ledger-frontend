@@ -16,21 +16,17 @@ import Sidebar from "components/Sidebar/Sidebar.jsx";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.jsx";
 
 import routes from "routes.js";
-import sideBar from "sidebar.js";
+import { userSideBar } from "sidebar.js";
 
 import appStyle from "assets/jss/material-dashboard-pro-react/layouts/adminStyle.jsx";
-import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/authStyle.jsx";
 
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/logo-white.svg";
-import AuthNavbar from "components/Navbars/AuthNavbar.jsx";
 import { checkUserRole, ROLES, getCurrentUser } from "../helpers/AuthHelper";
 
 var ps;
 
-// let styles = [...appStyle, ...pagesStyle];
-
-class DefaultLayout extends React.Component {
+class UserLayout extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,28 +42,28 @@ class DefaultLayout extends React.Component {
     this.resizeFunction = this.resizeFunction.bind(this);
   }
   componentDidMount() {
-    // if (navigator.platform.indexOf("Win") > -1) {
-    //   ps = new PerfectScrollbar(this.refs.mainPanel, {
-    //     suppressScrollX: true,
-    //     suppressScrollY: false
-    //   });
-    //   document.body.style.overflow = "hidden";
-    // }
-    // window.addEventListener("resize", this.resizeFunction);
+    if (navigator.platform.indexOf("Win") > -1) {
+      ps = new PerfectScrollbar(this.refs.mainPanel, {
+        suppressScrollX: true,
+        suppressScrollY: false
+      });
+      document.body.style.overflow = "hidden";
+    }
+    window.addEventListener("resize", this.resizeFunction);
   }
   componentWillUnmount() {
-    // if (navigator.platform.indexOf("Win") > -1) {
-    //   ps.destroy();
-    // }
-    // window.removeEventListener("resize", this.resizeFunction);
+    if (navigator.platform.indexOf("Win") > -1) {
+      ps.destroy();
+    }
+    window.removeEventListener("resize", this.resizeFunction);
   }
   componentDidUpdate(e) {
-    // if (e.history.location.pathname !== e.location.pathname) {
-    //   this.refs.mainPanel.scrollTop = 0;
-    //   if (this.state.mobileOpen) {
-    //     this.setState({ mobileOpen: false });
-    //   }
-    // }
+    if (e.history.location.pathname !== e.location.pathname) {
+      this.refs.mainPanel.scrollTop = 0;
+      if (this.state.mobileOpen) {
+        this.setState({ mobileOpen: false });
+      }
+    }
   }
   handleImageClick = image => {
     this.setState({ image: image });
@@ -114,7 +110,7 @@ class DefaultLayout extends React.Component {
       if (prop.collapse) {
         return this.getRoutes(prop.views);
       }
-      if (prop.layout === "/visitor") {
+      if (prop.layout === "/user") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -137,41 +133,60 @@ class DefaultLayout extends React.Component {
   }
   render() {
     const { classes, ...rest } = this.props;
+    const mainPanel =
+      classes.mainPanel +
+      " " +
+      cx({
+        [classes.mainPanelSidebarMini]: this.state.miniActive,
+        [classes.mainPanelWithPerfectScrollbar]:
+          navigator.platform.indexOf("Win") > -1
+      });
+    const side_bar = userSideBar;
     return (
       <div className={classes.wrapper}>
-        <div>
-          <div style={{ background: "black" }}>
-            <AuthNavbar
-              showLoginButton={true}
-              brandText={this.getActiveRoute(routes)}
-              color={"black"}
-              {...rest}
-            />
-          </div>
-          <br />
-          <div>
-            {/* On the /maps/full-screen-maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
-            {this.getRoute() ? (
-              <div className={classes.content}>
-                <div className={classes.container}>
-                  <Switch>{this.getRoutes(routes)}</Switch>
-                </div>
-              </div>
-            ) : (
-              <div className={classes.map}>
+        <Sidebar
+          routes={side_bar}
+          logoText={"Property management system"}
+          username={this.state.user.username}
+          logo={logo}
+          image={this.state.image}
+          handleDrawerToggle={this.handleDrawerToggle}
+          open={this.state.mobileOpen}
+          color={this.state.color}
+          bgColor={this.state.bgColor}
+          miniActive={this.state.miniActive}
+          userPageLink={"/user/user-page"}
+          {...rest}
+        />
+        <div className={mainPanel} ref="mainPanel">
+          <AdminNavbar
+            sidebarMinimize={this.sidebarMinimize.bind(this)}
+            miniActive={this.state.miniActive}
+            brandText={this.getActiveRoute(routes)}
+            handleDrawerToggle={this.handleDrawerToggle}
+            {...rest}
+          />
+          {/* On the /maps/full-screen-maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
+          {this.getRoute() ? (
+            <div className={classes.content}>
+              <div className={classes.container}>
                 <Switch>{this.getRoutes(routes)}</Switch>
               </div>
-            )}
-            {this.getRoute() ? <Footer fluid /> : null}
-          </div>
+            </div>
+          ) : (
+            <div className={classes.map}>
+              <Switch>{this.getRoutes(routes)}</Switch>
+            </div>
+          )}
+          {this.getRoute() ? <Footer fluid /> : null}
         </div>
       </div>
     );
   }
 }
 
-DefaultLayout.propTypes = {
+UserLayout.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(appStyle)(DefaultLayout);
+export default withStyles(appStyle)(UserLayout);

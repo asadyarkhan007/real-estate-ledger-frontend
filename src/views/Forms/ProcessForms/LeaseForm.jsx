@@ -23,7 +23,12 @@ import Axios from "axios";
 import { APIURL } from "../../../constants/AppConstants";
 import withStyles from "@material-ui/core/styles/withStyles";
 import regularFormsStyle from "../../../assets/jss/material-dashboard-pro-react/views/regularFormsStyle";
-import { checkUserRole, ROLES } from "../../../helpers/AuthHelper";
+import SweetAlert from "react-bootstrap-sweetalert";
+import {
+  checkUserRole,
+  ROLES,
+  getCurrentUser
+} from "../../../helpers/AuthHelper";
 import Datetime from "react-datetime";
 import moment from "moment";
 
@@ -32,33 +37,39 @@ class LeaseForm extends React.Component {
     super(props);
     this.state = {
       property_id: null,
-      leaseStartdate: null,
-      leaseEnddate: null,
+      leaseStartDate: null,
+      leaseEndDate: null,
       leasedBy: null,
       leasedTo: null,
       properties: [],
       mutation: null,
+      tax_amount: null,
+      leasing_charges: null,
       users: [],
-      mutations: []
+      mutations: [],
+      mutationData: [],
+      alert: null
     };
   }
 
-  componentDidMount() {
-    Axios.get(`${APIURL}/property`)
-      .then(response => {
-        this.setState({ properties: response.data.data });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+  prepareData = data => {
+    let properties = [];
 
-    Axios.get(`${APIURL}/users`)
-      .then(response => {
-        this.setState({ users: response.data.data });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    data.map(val => {
+      properties[val.id] = val.property;
+    });
+
+    this.setState({
+      properties: properties,
+      mutationData: data
+    });
+  };
+
+  componentDidMount() {
+    window.App.getLeasableProperties().then(data => {
+      console.log(data);
+      this.prepareData(data);
+    });
   }
 
   handlePropertyChange = event => {
@@ -70,6 +81,18 @@ class LeaseForm extends React.Component {
   handleMutationChange = event => {
     this.setState({
       mutation: event.target.value
+    });
+  };
+
+  handleLeasingCharges = event => {
+    this.setState({
+      leasing_charges: event.target.value
+    });
+  };
+
+  handleTaxAmount = event => {
+    this.setState({
+      tax_amount: event.target.value
     });
   };
 
@@ -86,10 +109,60 @@ class LeaseForm extends React.Component {
     });
   };
 
-  submitData = () => {
-    const { building, plot_id } = this.state;
-    building.plot_id = plot_id;
-    this.props.submit(building);
+  hideAlert = () => {
+    this.setState({
+      alert: null
+    });
+  };
+
+  Alert = (error, buttonClass) => {
+    this.setState({
+      alert: (
+        <SweetAlert
+          style={{ display: "block", marginTop: "-100px" }}
+          title={error}
+          onConfirm={() => this.hideAlert()}
+          onCancel={() => this.hideAlert()}
+          confirmBtnCssClass={this.props.classes.button + " " + buttonClass}
+        />
+      )
+    });
+  };
+
+  submitData = async () => {
+    const {
+      mutationData,
+      property_id,
+      leaseStartDate,
+      leaseEndDate,
+      tax_amount,
+      leasing_charges
+    } = this.state;
+
+    let mutationObj = mutationData.filter(val => {
+      return val.property.id === property_id;
+    })[0];
+
+    const user = getCurrentUser();
+
+    let result = await window.App.insertLeasedPropertyData(
+      mutationObj.id,
+      property_id,
+      leaseStartDate.valueOf(),
+      leaseEndDate.valueOf(),
+      user.blockchain_key,
+      user.nic + "",
+      mutationObj.newOwnerPkey,
+      mutationObj.newOwnerNic,
+      leasing_charges,
+      tax_amount,
+      window.web3.eth.defaultAccount,
+      window.App.stdGasAmount
+    );
+    if (result) {
+      console.log(result);
+      this.Alert("Submitted Successfully!", "success");
+    }
   };
 
   render() {
@@ -97,8 +170,6 @@ class LeaseForm extends React.Component {
     const {
       property_id,
       properties,
-      mutations,
-      mutation,
       leaseStartDate,
       leaseEndDate
     } = this.state;
@@ -146,10 +217,10 @@ class LeaseForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Property Id : ${el.id} => Street: ${
-                        el.plot.address.street
-                      }, Area: ${el.plot.address.area}, City: ${
-                        el.plot.address.city
+                      {`Property No : ${el.PropertyNo} => Property Type: ${
+                        el.propertyType
+                      } Street: ${el.street}, Area: ${el.areaSqYards}, City: ${
+                        el.city
                       }`}
                     </MenuItem>
                   ))}
@@ -157,56 +228,46 @@ class LeaseForm extends React.Component {
             </FormControl>
           </GridItem>
         </GridContainer>
-
         <GridContainer>
           <GridItem xs={12} sm={3}>
-            <FormLabel className={classes.labelHorizontal}>Mutations</FormLabel>
+            <FormLabel className={classes.labelHorizontal}>
+              Leasing Charges
+            </FormLabel>
           </GridItem>
-          <GridItem xs={12} sm={8} md={8} lg={8}>
-            <FormControl fullWidth className={classes.selectFormControl}>
-              <Select
-                MenuProps={{
-                  className: classes.selectMenu
-                }}
-                classes={{
-                  select: classes.select
-                }}
-                value={mutation}
-                onChange={this.handleMutationChange}
-                inputProps={{
-                  name: "simpleSelect",
-                  id: "simple-select"
-                }}
-              >
-                <MenuItem
-                  disabled
-                  classes={{
-                    root: classes.selectMenuItem
-                  }}
-                >
-                  Choose Property
-                </MenuItem>
-                {properties.length > 0 &&
-                  properties.map(el => (
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value={el.id}
-                    >
-                      {`Property Id : ${el.id} => Street: ${
-                        el.plot.address.street
-                      }, Area: ${el.plot.address.area}, City: ${
-                        el.plot.address.city
-                      }`}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
+          <GridItem xs={12} sm={8}>
+            <CustomInput
+              id="no_of_floors_building"
+              formControlProps={{
+                fullWidth: true
+              }}
+              inputProps={{
+                value: this.state.leasing_charges,
+                onChange: this.handleLeasingCharges,
+                placeholder: "Leasing Charges",
+                type: "number"
+              }}
+            />
+          </GridItem>
+          <GridItem xs={12} sm={3}>
+            <FormLabel className={classes.labelHorizontal}>
+              Tax Amount Per Year
+            </FormLabel>
+          </GridItem>
+          <GridItem xs={12} sm={8}>
+            <CustomInput
+              id="tax_amount_per_year"
+              formControlProps={{
+                fullWidth: true
+              }}
+              inputProps={{
+                value: this.state.tax_amount,
+                onChange: this.handleTaxAmount,
+                placeholder: "Tax Amount Per Year",
+                type: "number"
+              }}
+            />
           </GridItem>
         </GridContainer>
-
         <GridContainer>
           <GridItem xs={12} sm={12} md={4}>
             <Card>
@@ -245,7 +306,7 @@ class LeaseForm extends React.Component {
               </CardHeader>
               <CardBody>
                 <InputLabel className={classes.label}>
-                  Lease Start Date
+                  Lease End Date
                 </InputLabel>
                 <br />
                 <FormControl fullWidth>
@@ -272,6 +333,7 @@ class LeaseForm extends React.Component {
             </GridItem>
           </GridContainer>
         )}
+        {this.state.alert}
       </div>
     );
   }

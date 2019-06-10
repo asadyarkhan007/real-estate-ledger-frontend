@@ -16,7 +16,7 @@ import Axios from "axios";
 import { APIURL } from "../../../constants/AppConstants";
 import withStyles from "@material-ui/core/styles/withStyles";
 import regularFormsStyle from "../../../assets/jss/material-dashboard-pro-react/views/regularFormsStyle";
-import {ROLES} from "../../../helpers/AuthHelper";
+import { ROLES } from "../../../helpers/AuthHelper";
 import DetailComponent from "./DetailComponent";
 
 class BanglowForm extends React.Component {
@@ -143,7 +143,7 @@ class BanglowForm extends React.Component {
         <GridContainer>
           <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>
-              Bungalow Name
+              Bungalow No
             </FormLabel>
           </GridItem>
           <GridItem xs={12} sm={8}>

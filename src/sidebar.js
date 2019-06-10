@@ -2,30 +2,102 @@ import Dashboard from "views/Dashboard/Dashboard.jsx";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import PropertyForm from "./views/Forms/PropertyForm";
 import SaleDeedForm from "./views/Forms/ProcessForms/SaleDeedForm";
-import MutationForm from "./views/Forms/ProcessForms/MutationForm";
+import ManagingOrgForm from "./views/Forms/ManagingOrgForm";
 import LeaseForm from "./views/Forms/ProcessForms/LeaseForm";
 import TaxForm from "./views/Forms/ProcessForms/TaxForm";
+import AllRegistrar from "./views/Tables/AllRegistrar";
+import CreateRegistrarForm from "./views/Forms/CreateRegistrarForm";
+import PendingDeedTable from "./views/Tables/PendingDeedTable";
+import PendingMutationTable from "./views/Tables/PendingMutationTable";
+import MutatedPropertiesTable from "./views/Tables/MutatedPropertiesTable";
+import OwnProperties from "./views/Tables/OwnProperties";
+import SaleDeedUserForm from "./views/Forms/ProcessForms/SaleDeedUserForm";
+import SaleDeedOnUserBehalfForm from "./views/Forms/ProcessForms/SaleDeedOnUserBehalfForm";
 
-export const sideBar = [
+
+export const userSideBar = [
   {
     path: "/dashboard",
     name: "Property",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
-    layout: "/admin"
+    layout: "/user"
+  },
+  {
+    path: "/own-properties",
+    name: "Own Properties",
+    rtlName: "ملف تعريفي للمستخدم",
+    mini: "UP",
+    rtlMini: "شع",
+    component: OwnProperties,
+    layout: "/user"
+  },
+  {
+    path: "/sale-deed",
+    name: "Sales Deed",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: SaleDeedUserForm,
+    layout: "/user"
+  },
+  {
+    path: "/pending-deed",
+    name: "Pending Deed Signature",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingDeedTable,
+    layout: "/user"
   }
 ];
 
-export const sideBarManager = [
+export const adminSideBar = [
   {
     path: "/dashboard",
-    name: "Property",
+    name: "Managing Org",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
     layout: "/admin"
   },
+  {
+    path: "/managing-org-add",
+    name: "Add Managing Org",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: ManagingOrgForm,
+    layout: "/admin"
+  },
+  {
+    path: "/all-registrar",
+    name: "All Registrar",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: AllRegistrar,
+    layout: "/admin"
+  },
+  {
+    path: "/create-registrar",
+    name: "Create Registrar",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: CreateRegistrarForm,
+    layout: "/admin"
+  }
+];
+
+export const registrarSideBar = [
+  {
+    path: "/dashboard",
+    name: "Property",
+    rtlName: "لوحة القيادة",
+    icon: DashboardIcon,
+    component: Dashboard,
+    layout: "/registrar"
+  },
+ 
   {
     path: "/property-form",
     name: "Property Form",
@@ -33,7 +105,7 @@ export const sideBarManager = [
     mini: "PF",
     rtlMini: "صو",
     component: PropertyForm,
-    layout: "/admin"
+    layout: "/registrar"
   },
   {
     path: "/sales-deed",
@@ -42,7 +114,43 @@ export const sideBarManager = [
     mini: "SD",
     rtlMini: "صو",
     component: SaleDeedForm,
-    layout: "/admin"
+    layout: "/registrar"
+  },
+  {
+    path: "/user-sales-deed",
+    name: "Sales Deed on User behalf",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: SaleDeedOnUserBehalfForm,
+    layout: "/registrar"
+  },
+  {
+    path: "/pending-deed",
+    name: "Pending Deed Signature",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingDeedTable,
+    layout: "/registrar"
+  },
+  {
+    path: "/pending-mutation",
+    name: "Pending Mutations",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: PendingMutationTable,
+    layout: "/registrar"
+  },
+  {
+    path: "/mutated-properties",
+    name: "Mutated Properties",
+    rtlName: "أشكال عادية",
+    mini: "SD",
+    rtlMini: "صو",
+    component: MutatedPropertiesTable,
+    layout: "/registrar"
   },
   {
     path: "/lease",
@@ -51,15 +159,15 @@ export const sideBarManager = [
     mini: "MT",
     rtlMini: "صو",
     component: LeaseForm,
-    layout: "/admin"
-  },
-  {
-    path: "/tax",
-    name: "Tax",
-    rtlName: "أشكال عادية",
-    mini: "MT",
-    rtlMini: "صو",
-    component: TaxForm,
-    layout: "/admin"
+    layout: "/registrar"
   }
+  // {
+  //   path: "/tax",
+  //   name: "Tax",
+  //   rtlName: "أشكال عادية",
+  //   mini: "TX",
+  //   rtlMini: "صو",
+  //   component: TaxForm,
+  //   layout: "/registrar"
+  // }
 ];

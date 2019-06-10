@@ -296,6 +296,7 @@ class Sidebar extends React.Component {
 
   logOut = () => {
     localStorage.clear();
+    sessionStorage.clear();
     window.location = "/";
   };
 
@@ -385,7 +386,7 @@ class Sidebar extends React.Component {
               <List className={classes.list + " " + classes.collapseList}>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="/admin/user-page"
+                    to={this.props.userPageLink}
                     className={
                       classes.itemLink + " " + classes.userCollapseLinks
                     }

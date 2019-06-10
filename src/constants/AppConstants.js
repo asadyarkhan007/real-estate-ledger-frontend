@@ -140,6 +140,8 @@ export const AREA_LIST = [
   "SITE Town"
 ];
 
+export const PROVINCE_LIST = ["Sindh", "Balochistan", "Punjab", "KPK"];
+
 export const PROPERTY_TYPE = {
   PLOT: 1,
   BUILDING: 2,

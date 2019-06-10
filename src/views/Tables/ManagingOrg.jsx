@@ -24,11 +24,6 @@ import { dataTable } from "variables/general.jsx";
 import { cardTitle } from "assets/jss/material-dashboard-pro-react.jsx";
 import axios from "axios";
 import { APIURL } from "../../constants/AppConstants.js";
-import {
-  checkUserLogin,
-  USER_TYPE,
-  loggedInUserType
-} from "../../helpers/AuthHelper";
 
 const styles = {
   cardIconTitle: {
@@ -38,7 +33,7 @@ const styles = {
   }
 };
 
-class Dashboard extends React.Component {
+class ManagingOrg extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,57 +41,16 @@ class Dashboard extends React.Component {
     };
   }
 
-  getHouseName(data) {
-    let name = "";
-    if (data.apartment) {
-      name = `${data.apartment.name}, ${data.building.name}`;
-    } else if (data.banglow) {
-      name = `${data.banglow.name}`;
-    } else if (data.building) {
-      name = `${data.building.name}`;
-    }
-    return name;
-  }
-
-  getNoOfRooms(data) {
-    let name = "";
-    if (data.apartment) {
-      name = `${data.apartment.no_of_rooms}`;
-    } else if (data.banglow) {
-      name = `${data.banglow.no_of_rooms}`;
-    }
-    return name;
-  }
-
-  getLink = id => {
-    if (checkUserLogin()) {
-      if (loggedInUserType() === USER_TYPE.ADMIN) {
-        return `/admin/property-form/${id}`;
-      } else if (loggedInUserType() === USER_TYPE.REGISTRAR) {
-        return `/registrar/property/${id}`;
-      } else if (loggedInUserType() === USER_TYPE.USER) {
-        return `/user/property/${id}`;
-      }
-    } else {
-      return `/visitor/property-form/${id}`;
-    }
-  };
-
   prepareData(result) {
-    let data = result.data.map((prop, key) => {
+    let data = result.data.map(prop => {
       return {
         id: prop.id,
-        propertyType: prop.propertyType.name,
-        managingOrg: prop.managingOrg.name,
-        plot: `${prop.plot.id}, ${prop.plot.address.street}, ${
-          prop.plot.address.area
-        }, ${prop.plot.address.city}`,
-        house: prop.name,
-        plotArea: prop.plot.area_in_sq_yards,
-        propertyKind: prop.propertyKind.name,
+        name: prop.name,
+        full_name: prop.full_name,
+        active: prop.active ? "Active" : "IN Active",
         actions: (
           <div className="actions-right">
-            <a href={this.getLink(prop.id)} className={"edit"}>
+            <a href={`/admin/managing-org/${prop.id}`} className={"edit"}>
               More Details
             </a>
           </div>
@@ -109,10 +63,9 @@ class Dashboard extends React.Component {
   componentDidMount() {
     // this.prepareData(this.getData());
     axios
-      .get(`${APIURL}/property`)
+      .get(`${APIURL}/managing-org`)
       .then(response => {
-        console.log(response.data);
-        // this.setState({ data: response.data });
+        console.log(response.data.data);
         this.prepareData(response.data);
       })
       .catch(function(error) {
@@ -130,7 +83,7 @@ class Dashboard extends React.Component {
               <CardIcon color="primary">
                 <Assignment />
               </CardIcon>
-              <h4 className={classes.cardIconTitle}>Property List</h4>
+              <h4 className={classes.cardIconTitle}>Organization List</h4>
             </CardHeader>
             <CardBody>
               {this.state.data.length > 0 && (
@@ -143,28 +96,16 @@ class Dashboard extends React.Component {
                       accessor: "id"
                     },
                     {
-                      Header: "Property Type",
-                      accessor: "propertyType"
+                      Header: "Name",
+                      accessor: "name"
                     },
                     {
-                      Header: "Managing Org",
-                      accessor: "managingOrg"
+                      Header: "Full Name",
+                      accessor: "full_name"
                     },
                     {
-                      Header: "Address",
-                      accessor: "plot"
-                    },
-                    {
-                      Header: "Property No",
-                      accessor: "house"
-                    },
-                    {
-                      Header: "Property Area",
-                      accessor: "plotArea"
-                    },
-                    {
-                      Header: "Property Kind",
-                      accessor: "propertyKind"
+                      Header: "Status",
+                      accessor: "active"
                     },
                     {
                       Header: "Actions",
@@ -187,4 +128,4 @@ class Dashboard extends React.Component {
   }
 }
 
-export default withStyles(styles)(Dashboard);
+export default withStyles(styles)(ManagingOrg);

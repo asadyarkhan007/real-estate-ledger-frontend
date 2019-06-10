@@ -42,21 +42,10 @@ class SaleDeedForm extends React.Component {
   }
 
   componentDidMount() {
-    let properties =[];
-    Axios.get(`${APIURL}/property`)
-      .then(response => {
-        window.App.getMutatedOffchainPropertyIds().then(res=>{
-          if(res.length > 0){
-            properties = response.data.data.filter( val=> {
-              return !res.includes(val.id);
-            })
-            this.setState({ properties: properties });
-          }
-        });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    const user = getCurrentUser();
+    window.App.getMutatedPropertiesForUserByNic(user.nic + "").then(val => {
+      if (val) this.setState({ properties: val });
+    });
 
     Axios.get(`${APIURL}/users`)
       .then(response => {
@@ -102,73 +91,31 @@ class SaleDeedForm extends React.Component {
   };
 
   handleDeedTypeChange = event => {
-    this.setState(
-      {
-        deedType: event.target.value
-      },
-      () => {
-        if (this.state.deedType === "gift") {
-          this.setState({
-            soldAmount: 0
-          });
-        }
-      }
-    );
+    this.setState({
+      deedType: event.target.value
+    });
   };
 
   submitData = async () => {
+    const { property_id } = this.state;
+    const user = getCurrentUser();
+
     this.setState({
       disabled: true
     });
 
-    let offChainPropertyId = this.state.property_id;
-    let selectedProperty = this.state.properties.filter(val => {
-      return val.id === this.state.property_id;
-    })[0];
     let buyer = this.state.users.filter(val => {
       return val.id === this.state.buyer;
     })[0];
 
-    let propertyArea = selectedProperty.plot.area_in_sq_yards;
-    let propertyType = selectedProperty.propertyType.name;
-    let propertyKind = selectedProperty.propertyKind.name;
-    let managingOrg = selectedProperty.managingOrg.name.toLowerCase();
-    let street = selectedProperty.plot.address.street;
-    let propertyNo = selectedProperty.name;
-    let city = selectedProperty.plot.address.city;
-    let province = selectedProperty.plot.address.province || "";
-    let country = selectedProperty.plot.address.country;
-    let registrar = getCurrentUser();
-
-    let propertyTrans = await window.App.insertPropertyDataIfNotExist(
-      offChainPropertyId,
-      propertyNo,
-      propertyArea,
-      propertyType,
-      propertyKind,
-      managingOrg.toLowerCase(),
-      street,
-      city,
-      province,
-      country,
-      window.web3.eth.defaultAccount,
-      window.App.stdGasAmount
-    );
-    console.log(propertyTrans);
-
-    let blockChainProperty = await window.App.getPropertyByOffChainPropertyId(
-      offChainPropertyId
-    );
-    console.log(blockChainProperty);
-
     let saleDeedTrans = await window.App.insertDeedDataIfNotExist(
-      blockChainProperty.id,
+      +property_id,
       +this.state.stampPaperAmount,
       +this.state.soldAmount,
       this.state.deedType,
-      managingOrg,
-      registrar.nic + "",
-      registrar.blockchain_key,
+      user.username,
+      user.nic + "",
+      user.blockchain_key,
       buyer.username,
       buyer.nic + "",
       buyer.blockchain_key,
@@ -179,11 +126,12 @@ class SaleDeedForm extends React.Component {
 
     let saleDeedId = saleDeedTrans.logs[0].args.newID.toNumber();
     console.log(saleDeedId);
+
     // create sign deed without anyone signature
     let signDeed = await window.App.insertSignDeedDataIfNotExist(
-      blockChainProperty.id,
+      property_id,
       saleDeedId,
-      this.state.soldAmount,
+      +this.state.soldAmount,
       window.web3.eth.defaultAccount,
       window.App.stdGasAmount
     );
@@ -315,13 +263,13 @@ class SaleDeedForm extends React.Component {
                         root: classes.selectMenuItem,
                         selected: classes.selectMenuItemSelected
                       }}
-                      value={el.id}
+                      value={el.property.id}
                     >
-                      {`Property No : ${el.name} => Property Type: ${
-                        el.propertyType.name
-                      } Street: ${el.plot.address.street}, Area: ${
-                        el.plot.address.area
-                      }, City: ${el.plot.address.city}`}
+                      {`Property Id : ${el.property.id} => Street: ${
+                        el.property.street
+                      }, Area: ${el.property.areaSqYards} sq yards , City: ${
+                        el.property.city
+                      } Province: ${el.property.province}`}
                     </MenuItem>
                   ))}
               </Select>
@@ -350,29 +298,26 @@ class SaleDeedForm extends React.Component {
             />
           </GridItem>
         </GridContainer>
-        {this.state.deedType !== "gift" && (
-          <GridContainer>
-            <GridItem xs={12} sm={3}>
-              <FormLabel className={classes.labelHorizontal}>
-                Sold Amount
-              </FormLabel>
-            </GridItem>
-            <GridItem xs={12} sm={8}>
-              <CustomInput
-                formControlProps={{
-                  fullWidth: true
-                }}
-                inputProps={{
-                  value: soldAmount,
-                  onChange: this.handleSoldAmountChange,
-                  placeholder: "Sold Amount",
-                  type: "number"
-                }}
-              />
-            </GridItem>
-          </GridContainer>
-        )}
-
+        <GridContainer>
+          <GridItem xs={12} sm={3}>
+            <FormLabel className={classes.labelHorizontal}>
+              Sold Amount
+            </FormLabel>
+          </GridItem>
+          <GridItem xs={12} sm={8}>
+            <CustomInput
+              formControlProps={{
+                fullWidth: true
+              }}
+              inputProps={{
+                value: soldAmount,
+                onChange: this.handleSoldAmountChange,
+                placeholder: "Sold Amount",
+                type: "number"
+              }}
+            />
+          </GridItem>
+        </GridContainer>
         <GridContainer>
           <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>Buyer</FormLabel>
@@ -410,28 +355,24 @@ class SaleDeedForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`username : ${el.username} , NIC : ${
-                        el.nic
-                      } , Full Name: ${el.full_name} , email : ${el.email} `}
+                      {`Username : ${el.username}`}
                     </MenuItem>
                   ))}
               </Select>
             </FormControl>
           </GridItem>
         </GridContainer>
-        {checkUserRole() === ROLES.MANAGER && (
-          <GridContainer justify="flex-end">
-            <GridItem xs={6} sm={3} md={3}>
-              <Button
-                color="rose"
-                onClick={this.submitData}
-                disabled={this.state.disabled}
-              >
-                Submit
-              </Button>
-            </GridItem>
-          </GridContainer>
-        )}
+        <GridContainer justify="flex-end">
+          <GridItem xs={6} sm={3} md={3}>
+            <Button
+              color="rose"
+              onClick={this.submitData}
+              disabled={this.state.disabled}
+            >
+              Submit
+            </Button>
+          </GridItem>
+        </GridContainer>
         {this.state.alert}
       </div>
     );

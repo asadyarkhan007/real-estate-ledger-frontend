@@ -27,6 +27,7 @@ import Snackbars from "components/Snackbar/Snackbar.jsx";
 import AddAlert from "@material-ui/icons/AddAlert";
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
+import { USER_TYPE, loggedInUserType } from "../../helpers/AuthHelper.jsx";
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -83,9 +84,15 @@ class LoginPage extends React.Component {
       .then(response => {
         console.log(response);
         if (response.data.success) {
-          localStorage.setItem("user", JSON.stringify(response.data.data));
-          localStorage.setItem("isLoggedIn", true);
-          window.location = "/admin/dashboard";
+          sessionStorage.setItem("user", JSON.stringify(response.data.data));
+          sessionStorage.setItem("isLoggedIn", true);
+          if (loggedInUserType() === USER_TYPE.ADMIN) {
+            window.location = "/admin/dashboard";
+          } else if (loggedInUserType() === USER_TYPE.REGISTRAR) {
+            window.location = "/registrar/dashboard";
+          } else if (loggedInUserType() === USER_TYPE.USER) {
+            window.location = "/user/dashboard";
+          }
         } else {
           this.setState({ alert: true });
         }
@@ -130,7 +137,7 @@ class LoginPage extends React.Component {
                 </CardHeader>
                 <CardBody>
                   <CustomInput
-                    labelText="Email..."
+                    labelText="Username..."
                     id="email"
                     formControlProps={{
                       fullWidth: true

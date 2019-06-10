@@ -64,6 +64,23 @@ class AuthNavbar extends React.Component {
             />
           </NavLink>
         </ListItem>
+        {this.props.showLoginButton && (
+          <ListItem className={classes.listItem}>
+            <NavLink
+              to={"/auth/login"}
+              className={cx(classes.navLink, {
+                [classes.navLinkActive]: this.activeRoute("/auth/login")
+              })}
+            >
+              <PersonAdd className={classes.listItemIcon} />
+              <ListItemText
+                primary={"login"}
+                disableTypography={true}
+                className={classes.listItemText}
+              />
+            </NavLink>
+          </ListItem>
+        )}
         <ListItem className={classes.listItem}>
           <NavLink
             to={"/auth/register-page"}
@@ -73,7 +90,7 @@ class AuthNavbar extends React.Component {
           >
             <PersonAdd className={classes.listItemIcon} />
             <ListItemText
-              primary={"Register"}
+              primary={"Sign-Up"}
               disableTypography={true}
               className={classes.listItemText}
             />
@@ -82,19 +99,25 @@ class AuthNavbar extends React.Component {
       </List>
     );
     return (
-      <AppBar position="static" className={classes.appBar + appBarClasses}>
+      <AppBar
+        position="static"
+        className={classes.appBar + appBarClasses}
+        style={{
+          background: color ? color : ""
+        }}
+      >
         <Toolbar className={classes.container}>
           <Hidden smDown>
             <div className={classes.flex}>
               <Button href="/" className={classes.title} color="transparent">
-                {"Property Portal"}
+                {"Property management system"}
               </Button>
             </div>
           </Hidden>
           <Hidden mdUp>
             <div className={classes.flex}>
               <Button href="#" className={classes.title} color="transparent">
-                Property Finder
+                Property Ledger Application
               </Button>
             </div>
           </Hidden>

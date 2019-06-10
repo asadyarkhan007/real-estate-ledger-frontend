@@ -20,15 +20,13 @@ import CardIcon from "components/Card/CardIcon.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 
 import { dataTable } from "variables/general.jsx";
+import { NavLink } from "react-router-dom";
 
 import { cardTitle } from "assets/jss/material-dashboard-pro-react.jsx";
 import axios from "axios";
 import { APIURL } from "../../constants/AppConstants.js";
-import {
-  checkUserLogin,
-  USER_TYPE,
-  loggedInUserType
-} from "../../helpers/AuthHelper";
+import { getCurrentUser } from "../../helpers/AuthHelper.jsx";
+import { ContractModuleFactory } from "web3-eth-contract";
 
 const styles = {
   cardIconTitle: {
@@ -38,7 +36,7 @@ const styles = {
   }
 };
 
-class Dashboard extends React.Component {
+class PendingMutationTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,59 +44,24 @@ class Dashboard extends React.Component {
     };
   }
 
-  getHouseName(data) {
-    let name = "";
-    if (data.apartment) {
-      name = `${data.apartment.name}, ${data.building.name}`;
-    } else if (data.banglow) {
-      name = `${data.banglow.name}`;
-    } else if (data.building) {
-      name = `${data.building.name}`;
-    }
-    return name;
-  }
-
-  getNoOfRooms(data) {
-    let name = "";
-    if (data.apartment) {
-      name = `${data.apartment.no_of_rooms}`;
-    } else if (data.banglow) {
-      name = `${data.banglow.no_of_rooms}`;
-    }
-    return name;
-  }
-
-  getLink = id => {
-    if (checkUserLogin()) {
-      if (loggedInUserType() === USER_TYPE.ADMIN) {
-        return `/admin/property-form/${id}`;
-      } else if (loggedInUserType() === USER_TYPE.REGISTRAR) {
-        return `/registrar/property/${id}`;
-      } else if (loggedInUserType() === USER_TYPE.USER) {
-        return `/user/property/${id}`;
-      }
-    } else {
-      return `/visitor/property-form/${id}`;
-    }
-  };
-
   prepareData(result) {
-    let data = result.data.map((prop, key) => {
+    console.log(result);
+    let data = result.map(val => {
       return {
-        id: prop.id,
-        propertyType: prop.propertyType.name,
-        managingOrg: prop.managingOrg.name,
-        plot: `${prop.plot.id}, ${prop.plot.address.street}, ${
-          prop.plot.address.area
-        }, ${prop.plot.address.city}`,
-        house: prop.name,
-        plotArea: prop.plot.area_in_sq_yards,
-        propertyKind: prop.propertyKind.name,
+        sellerFullName: val.sellerFullName,
+        sellerNic: val.sellerNic,
+        buyerFullName: val.buyerFullName,
+        buyerNic: val.buyerNic,
+        soldAmount: val.soldAmount,
+        propertyType: val.property.propertyType,
+        propertyArea: val.property.areaSqYards,
+        propertyKind: val.property.kind,
+        managingOrg: val.property.managingOrg,
         actions: (
           <div className="actions-right">
-            <a href={this.getLink(prop.id)} className={"edit"}>
-              More Details
-            </a>
+            <NavLink to={`/registrar/mutation/${val.signDeed.id}`}>
+              Mutate
+            </NavLink>
           </div>
         )
       };
@@ -106,18 +69,25 @@ class Dashboard extends React.Component {
     this.setState({ data: data });
   }
 
+  loadData() {
+    const user = getCurrentUser();
+    // setTimeout(() => {
+    //   window.App.getPendingMutationListForRegistrar(
+    //     (user.managingOrg.name + "").toLowerCase()
+    //   ).then(data => {
+    //     this.prepareData(data);
+    //   });
+    // }, 3000);
+
+    window.App.getPendingMutationListForRegistrar(
+      (user.managingOrg.name + "").toLowerCase()
+    ).then(data => {
+      this.prepareData(data);
+    });
+  }
+
   componentDidMount() {
-    // this.prepareData(this.getData());
-    axios
-      .get(`${APIURL}/property`)
-      .then(response => {
-        console.log(response.data);
-        // this.setState({ data: response.data });
-        this.prepareData(response.data);
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    this.loadData();
   }
 
   render() {
@@ -130,7 +100,7 @@ class Dashboard extends React.Component {
               <CardIcon color="primary">
                 <Assignment />
               </CardIcon>
-              <h4 className={classes.cardIconTitle}>Property List</h4>
+              <h4 className={classes.cardIconTitle}>Pending Mutation</h4>
             </CardHeader>
             <CardBody>
               {this.state.data.length > 0 && (
@@ -139,32 +109,40 @@ class Dashboard extends React.Component {
                   filterable
                   columns={[
                     {
-                      Header: "ID",
-                      accessor: "id"
+                      Header: "Seller Full Name",
+                      accessor: "sellerFullName"
+                    },
+                    {
+                      Header: "Seller NIc",
+                      accessor: "sellerNic"
+                    },
+                    {
+                      Header: "Buyer Full Name",
+                      accessor: "buyerFullName"
+                    },
+                    {
+                      Header: "Buyer Nic",
+                      accessor: "buyerNic"
+                    },
+                    {
+                      Header: "Sold Amount",
+                      accessor: "soldAmount"
                     },
                     {
                       Header: "Property Type",
                       accessor: "propertyType"
                     },
                     {
-                      Header: "Managing Org",
-                      accessor: "managingOrg"
-                    },
-                    {
-                      Header: "Address",
-                      accessor: "plot"
-                    },
-                    {
-                      Header: "Property No",
-                      accessor: "house"
+                      Header: "Property Kind",
+                      accessor: "propertyKind"
                     },
                     {
                       Header: "Property Area",
-                      accessor: "plotArea"
+                      accessor: "propertyArea"
                     },
                     {
-                      Header: "Property Kind",
-                      accessor: "propertyKind"
+                      Header: "Managing Org",
+                      accessor: "managingOrg"
                     },
                     {
                       Header: "Actions",
@@ -187,4 +165,4 @@ class Dashboard extends React.Component {
   }
 }
 
-export default withStyles(styles)(Dashboard);
+export default withStyles(styles)(PendingMutationTable);

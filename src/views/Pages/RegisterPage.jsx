@@ -42,7 +42,8 @@ class RegisterPage extends React.Component {
       email: null,
       password: null,
       alert: null,
-      error: ""
+      error: "",
+      full_name: ""
     };
     this.handleToggle = this.handleToggle.bind(this);
   }
@@ -66,6 +67,10 @@ class RegisterPage extends React.Component {
     this.setState({ username: e.target.value });
   };
 
+  handleFullName = e => {
+    this.setState({ full_name: e.target.value });
+  };
+
   handlePasswordChange = e => {
     this.setState({ password: e.target.value });
   };
@@ -84,7 +89,7 @@ class RegisterPage extends React.Component {
   };
 
   submitData = () => {
-    const { username, password, nic, email } = this.state;
+    const { username, password, nic, email, full_name } = this.state;
 
     if (this.validate()) {
       axios
@@ -92,6 +97,8 @@ class RegisterPage extends React.Component {
           username: username,
           password: password,
           nic: nic,
+          full_name: full_name,
+          user_type: 3,
           email: email
         })
         .then(response => {
@@ -116,27 +123,21 @@ class RegisterPage extends React.Component {
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={10}>
             <Card className={classes.cardSignup}>
-              <h2 className={classes.cardTitle}>Register</h2>
+              <h2 className={classes.cardTitle}>Sign up</h2>
               <CardBody>
                 <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={5}>
                     <InfoArea
-                      title="Property Finder"
-                      description="We've created the marketing campaign of the website. It was a very interesting collaboration."
+                      title="Find any Property Owner"
+                      description="You can find any property and its owner."
                       icon={Timeline}
                       iconColor="rose"
                     />
                     <InfoArea
-                      title="Property Allotment"
-                      description="We've developed the website with HTML5 and CSS3. The client has access to the code using GitHub."
+                      title="Property Transfer"
+                      description="You can sell or digitally transfer your property to any individual."
                       icon={Code}
                       iconColor="primary"
-                    />
-                    <InfoArea
-                      title="Buy and Sell"
-                      description="There is also a Fully Customizable CMS Admin Dashboard for this product."
-                      icon={Group}
-                      iconColor="info"
                     />
                   </GridItem>
                   <GridItem xs={12} sm={8} md={5}>
@@ -172,6 +173,24 @@ class RegisterPage extends React.Component {
                           ),
                           placeholder: "Username...",
                           onChange: this.handleUsernameChange
+                        }}
+                      />
+                      <CustomInput
+                        formControlProps={{
+                          fullWidth: true,
+                          className: classes.customFormControlClasses
+                        }}
+                        inputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              className={classes.inputAdornment}
+                            >
+                              <Face className={classes.inputAdornmentIcon} />
+                            </InputAdornment>
+                          ),
+                          placeholder: "Full Name...",
+                          onChange: this.handleFullName
                         }}
                       />
                       <CustomInput
@@ -260,7 +279,7 @@ class RegisterPage extends React.Component {
                       />
                       <div className={classes.center}>
                         <Button round color="primary" onClick={this.submitData}>
-                          Get started
+                          Sign up
                         </Button>
                       </div>
                     </form>

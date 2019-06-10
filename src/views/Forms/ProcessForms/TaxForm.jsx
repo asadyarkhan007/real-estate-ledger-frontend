@@ -131,7 +131,7 @@ class TaxForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Property Id : ${el.id} => Street: ${
+                      {`Property No : ${el.propertyNo} => Street: ${
                         el.plot.address.street
                       }, Area: ${el.plot.address.area}, City: ${
                         el.plot.address.city

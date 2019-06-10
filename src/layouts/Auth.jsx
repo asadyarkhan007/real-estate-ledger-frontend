@@ -44,7 +44,7 @@ class Pages extends React.Component {
   getBgImage = () => {
     if (window.location.pathname.indexOf("/auth/register-page") !== -1) {
       return register;
-    } else if (window.location.pathname.indexOf("/auth/login-page") !== -1) {
+    } else if (window.location.pathname.indexOf("/auth/login") !== -1) {
       return login;
     } else if (window.location.pathname.indexOf("/auth/pricing-page") !== -1) {
       return pricing;

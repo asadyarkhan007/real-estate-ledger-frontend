@@ -5,6 +5,7 @@ pragma solidity 0.5.0;
      struct Property {
         uint id;
         uint propertyOffChainId;
+        bytes32  propertyNo;
         uint areaSqYards;
         bytes32  propertyType;
         bytes32  kind;
@@ -22,11 +23,11 @@ pragma solidity 0.5.0;
         event newIdEvent(uint newID);
         constructor() public {
             // sentinel
-            properties.push(Property(0, 0, 0, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0,0));
+            properties.push(Property(0, 0, 0x00, 0, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0,0));
         }
 
 
-    function insert(uint _propertyOffChainId,uint _areaSqYards,
+    function insert(uint _propertyOffChainId,bytes32 _propertyNo,uint _areaSqYards,
         bytes32 _propertyType,bytes32 _kind,bytes32 _managingOrg,bytes32 _street,
         bytes32 _city,bytes32 _province,bytes32 _country) public returns (uint newID) {
 
@@ -35,6 +36,7 @@ pragma solidity 0.5.0;
         properties.push(Property({
                 id:newID,
                 propertyOffChainId:_propertyOffChainId,
+                propertyNo: _propertyNo,
                 areaSqYards:_areaSqYards,
                 propertyType:_propertyType,
                 kind:_kind,
@@ -61,9 +63,10 @@ pragma solidity 0.5.0;
     }
 
     function getPropertyFirst(uint index) public view returns(uint,
-        uint,uint,bytes32,uint, uint) {
+        uint,bytes32,uint,bytes32,uint, uint) {
         return (properties[index].id, 
         properties[index].propertyOffChainId,
+        properties[index].propertyNo,
         properties[index].areaSqYards,
         properties[index].propertyType,
         properties[index].prev, 

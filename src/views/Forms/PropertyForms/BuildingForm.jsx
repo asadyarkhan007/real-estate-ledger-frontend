@@ -143,7 +143,7 @@ class BuildingForm extends React.Component {
         <GridContainer>
           <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>
-              Building Name
+              Building No
             </FormLabel>
           </GridItem>
           <GridItem xs={12} sm={8}>
