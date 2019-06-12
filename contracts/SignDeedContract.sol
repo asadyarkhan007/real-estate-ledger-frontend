@@ -1,4 +1,6 @@
 pragma solidity 0.5.0;
+
+import { ECDSALibrary } from "./ECDSALibrary.sol"; 
   
   contract SignDeedContract {
       
@@ -57,6 +59,8 @@ pragma solidity 0.5.0;
         signDeeds[_signDeedId] = signDeed;
         if(keccak256(signDeed.sellerSignature)  != keccak256(new bytes(0))
         && keccak256(signDeed.buyerSignature)  != keccak256(new bytes(0))){
+            verifySignature(address(0),signDeed.soldAmount,1,signDeed.sellerSignature);
+            verifySignature(address(0),signDeed.soldAmount,1,signDeed.buyerSignature);
             signDeed.verified=1;
             signDeeds[_signDeedId] = signDeed;
         }
@@ -64,6 +68,7 @@ pragma solidity 0.5.0;
         emit updateBySellerEvent(updatedId);
     }
     
+        
      function signForBuyer(                                                                
         uint _signDeedId,
         bytes memory _buyerSignature) public returns (uint updatedId) {
@@ -74,6 +79,8 @@ pragma solidity 0.5.0;
         signDeeds[_signDeedId] = signDeed;
         if(keccak256(signDeed.sellerSignature)  != keccak256(new bytes(0))
         && keccak256(signDeed.buyerSignature)  != keccak256(new bytes(0))){
+            verifySignature(address(0),signDeed.soldAmount,1,signDeed.sellerSignature);
+            verifySignature(address(0),signDeed.soldAmount,1,signDeed.buyerSignature);
             signDeed.verified=1;
             signDeeds[_signDeedId] = signDeed;
         }
@@ -112,6 +119,42 @@ pragma solidity 0.5.0;
         signDeeds[index].verified,
         signDeeds[index].prev, 
         signDeeds[index].next);
+    }
+    
+      function verify(uint _signDeedId,  uint _nonce,address _buyerPKey,address _sellerPKey) public 
+      returns (uint verified){
+
+        SignDeed memory signDeed = signDeeds[_signDeedId];
+        //verify buyer
+        if(verifySignature(_buyerPKey,signDeed.soldAmount,_nonce,signDeed.buyerSignature) ==1 &&
+        //verifyseller
+        verifySignature(_sellerPKey,signDeed.soldAmount,_nonce,signDeed.sellerSignature) ==1){
+            signDeed.verified=1;
+            signDeeds[_signDeedId] = signDeed;
+        }
+        verified =signDeed.verified;
+    
+    }
+    
+    
+    
+    mapping(address => mapping(uint => bool)) seenNonces;
+    using ECDSALibrary for bytes32;
+
+    function verifySignature(address owner, uint amount, uint nonce, bytes memory signature) pure public 
+    returns (uint verified){verified=1;
+      // This recreates the message hash that was signed on the client.
+      
+      bytes32 hash = keccak256(abi.encodePacked(owner, amount, nonce));
+      bytes32 messageHash = hash.toEthSignedMessageHash();
+    
+
+      // Verify that the message's signer is the owner of the order
+      address signer = messageHash.recover(signature);
+      if(signer == owner){
+            verified=1;
+      }
+    
     }
  
       

@@ -18,7 +18,7 @@ import SaleDeedOnUserBehalfForm from "./views/Forms/ProcessForms/SaleDeedOnUserB
 export const userSideBar = [
   {
     path: "/dashboard",
-    name: "Property",
+    name: "Properties",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
@@ -35,7 +35,7 @@ export const userSideBar = [
   },
   {
     path: "/sale-deed",
-    name: "Sales Deed",
+    name: "Create Sale Deed",
     rtlName: "أشكال عادية",
     mini: "SD",
     rtlMini: "صو",
@@ -56,7 +56,7 @@ export const userSideBar = [
 export const adminSideBar = [
   {
     path: "/dashboard",
-    name: "Managing Org",
+    name: "Managing Organization",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
@@ -64,7 +64,7 @@ export const adminSideBar = [
   },
   {
     path: "/managing-org-add",
-    name: "Add Managing Org",
+    name: "Create Managing Organization",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: ManagingOrgForm,
@@ -72,7 +72,7 @@ export const adminSideBar = [
   },
   {
     path: "/all-registrar",
-    name: "All Registrar",
+    name: "Registrar",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: AllRegistrar,
@@ -91,7 +91,7 @@ export const adminSideBar = [
 export const registrarSideBar = [
   {
     path: "/dashboard",
-    name: "Property",
+    name: "Properties",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
@@ -109,7 +109,7 @@ export const registrarSideBar = [
   },
   {
     path: "/sales-deed",
-    name: "Sales deed",
+    name: "Inital Sale Deed",
     rtlName: "أشكال عادية",
     mini: "SD",
     rtlMini: "صو",
@@ -118,7 +118,7 @@ export const registrarSideBar = [
   },
   {
     path: "/user-sales-deed",
-    name: "Sales Deed on User behalf",
+    name: "Sale Deed on User behalf",
     rtlName: "أشكال عادية",
     mini: "SD",
     rtlMini: "صو",
@@ -136,7 +136,7 @@ export const registrarSideBar = [
   },
   {
     path: "/pending-mutation",
-    name: "Pending Mutations",
+    name: "Pending Mutation",
     rtlName: "أشكال عادية",
     mini: "SD",
     rtlMini: "صو",
@@ -145,7 +145,7 @@ export const registrarSideBar = [
   },
   {
     path: "/mutated-properties",
-    name: "Mutated Properties",
+    name: "Transferred Properties",
     rtlName: "أشكال عادية",
     mini: "SD",
     rtlMini: "صو",
@@ -154,7 +154,7 @@ export const registrarSideBar = [
   },
   {
     path: "/lease",
-    name: "Lease",
+    name: "Create Lease",
     rtlName: "أشكال عادية",
     mini: "MT",
     rtlMini: "صو",

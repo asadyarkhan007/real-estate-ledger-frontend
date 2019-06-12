@@ -169,6 +169,7 @@ class LoginPage extends React.Component {
                       type: "password"
                     }}
                   />
+                  <a href={"#"}>Forgot Password ?</a>
                 </CardBody>
                 <CardFooter className={classes.justifyContentCenter}>
                   <Button

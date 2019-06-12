@@ -42,14 +42,22 @@ class SaleDeedForm extends React.Component {
   }
 
   componentDidMount() {
-    let properties =[];
+    let registrar = getCurrentUser();
+    let properties = [];
     Axios.get(`${APIURL}/property`)
       .then(response => {
-        window.App.getMutatedOffchainPropertyIds().then(res=>{
-          if(res.length > 0){
-            properties = response.data.data.filter( val=> {
-              return !res.includes(val.id);
-            })
+        window.App.getMutatedOffchainPropertyIds().then(res => {
+          if (res.length > 0) {
+            properties = response.data.data.filter(val => {
+              return !res.includes(val.id) &&
+              val.managingOrg.name.toLowerCase() === registrar.managingOrg.name.toLowerCase();
+            });
+          
+            this.setState({ properties: properties });
+          } else {
+            properties = response.data.data.filter(val => {
+              return val.managingOrg.name.toLowerCase() === registrar.managingOrg.name.toLowerCase();
+            });
             this.setState({ properties: properties });
           }
         });
@@ -372,7 +380,6 @@ class SaleDeedForm extends React.Component {
             </GridItem>
           </GridContainer>
         )}
-
         <GridContainer>
           <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>Buyer</FormLabel>

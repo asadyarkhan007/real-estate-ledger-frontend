@@ -53,6 +53,7 @@ class OwnPropertiesTable extends React.Component {
         propertyArea: val.property.areaSqYards,
         propertyKind: val.property.kind,
         managingOrg: val.property.managingOrg,
+        propertyNo: val.property.propertyNo,
         actions: (
           <div className="actions-right">
             <NavLink to={`/user/mutated-property-detail/${val.property.id}`}>
@@ -87,7 +88,7 @@ class OwnPropertiesTable extends React.Component {
               <CardIcon color="primary">
                 <Assignment />
               </CardIcon>
-              <h4 className={classes.cardIconTitle}>Mutated Properties</h4>
+              <h4 className={classes.cardIconTitle}>Own Properties</h4>
             </CardHeader>
             <CardBody>
               {this.state.data.length > 0 && (
@@ -96,16 +97,12 @@ class OwnPropertiesTable extends React.Component {
                   filterable
                   columns={[
                     {
-                      Header: "City",
-                      accessor: "city"
-                    },
-                    {
-                      Header: "Street",
-                      accessor: "street"
-                    },
-                    {
                       Header: "Property Type",
                       accessor: "propertyType"
+                    },
+                    {
+                      Header: "Property Number",
+                      accessor: "propertyNo"
                     },
                     {
                       Header: "Property Kind",
@@ -115,6 +112,14 @@ class OwnPropertiesTable extends React.Component {
                       Header: "Property Area",
                       accessor: "propertyArea"
                     },
+                    {
+                      Header: "City",
+                      accessor: "city"
+                    },
+                    {
+                      Header: "Street",
+                      accessor: "street"
+                    },                
                     {
                       Header: "Managing Org",
                       accessor: "managingOrg"

@@ -24,7 +24,12 @@ import userProfileStyles from "assets/jss/material-dashboard-pro-react/views/use
 import avatar from "assets/img/faces/marc.jpg";
 import Axios from "axios";
 import { APIURL } from "../../constants/AppConstants";
-import { getCurrentUser } from "../../helpers/AuthHelper";
+import {
+  getCurrentUser,
+  checkUserLogin,
+  loggedInUserType,
+  USER_TYPE
+} from "../../helpers/AuthHelper";
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -49,6 +54,7 @@ class UserProfile extends React.Component {
           username: response.data.data.username,
           phone_number: response.data.data.phone_number,
           nic: response.data.data.nic,
+          managing_org: response.data.data.managingOrg.name,
           password: response.data.data.password,
           blockchain_key: response.data.data.blockchain_key,
           email: response.data.data.email
@@ -79,6 +85,20 @@ class UserProfile extends React.Component {
     this.setState({ phone_number: e.target.value });
   };
 
+  getLink = () => {
+    if (checkUserLogin()) {
+      if (loggedInUserType() === USER_TYPE.ADMIN) {
+        return `/admin/dashboard`;
+      } else if (loggedInUserType() === USER_TYPE.REGISTRAR) {
+        return `/registrar/dashboard`;
+      } else if (loggedInUserType() === USER_TYPE.USER) {
+        return `/user/dashboard`;
+      }
+    } else {
+      return `/visitor/dashboard`;
+    }
+  };
+
   submitData = () => {
     const {
       username,
@@ -97,10 +117,11 @@ class UserProfile extends React.Component {
       phone_number: phone_number,
       blockchain_key: blockchain_key
     })
-      .then(function(response) {
+      .then(response => {
         console.log(response);
+        window.location = this.getLink();
       })
-      .catch(function(error) {
+      .catch(error => {
         console.log(error);
       });
   };
@@ -192,6 +213,16 @@ class UserProfile extends React.Component {
                     />
                   </GridItem>
                 </GridContainer>
+                {this.state.managing_org && (
+                  <GridContainer>
+                    <GridItem xs={12} sm={4} md={4}>
+                      Organization Name
+                    </GridItem>
+                    <GridItem xs={12} sm={8} md={8}>
+                      {this.state.managing_org}
+                    </GridItem>
+                  </GridContainer>
+                )}
                 <Button
                   color="rose"
                   className={classes.updateProfileButton}

@@ -7,7 +7,7 @@
   "sourceMap": "239:3502:1:-;;132:2:-1;166:7;155:9;146:7;137:37;252:7;246:14;243:1;238:23;232:4;229:33;270:1;265:20;;;;222:63;;265:20;274:9;222:63;;298:9;295:1;288:20;328:4;319:7;311:22;352:7;343;336:24",
   "deployedSourceMap": "239:3502:1:-;;;;;;;;",
   "source": "pragma solidity ^0.5.0;\r\n\r\n/**\r\n * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.\r\n *\r\n * These functions can be used to verify that a message was signed by the holder\r\n * of the private keys of a given address.\r\n */\r\nlibrary ECDSALibrary {\r\n    /**\r\n     * @dev Returns the address that signed a hashed message (`hash`) with\r\n     * `signature`. This address can then be used for verification purposes.\r\n     *\r\n     * The `ecrecover` EVM opcode allows for malleable (non-unique) signatures:\r\n     * this function rejects them by requiring the `s` value to be in the lower\r\n     * half order, and the `v` value to be either 27 or 28.\r\n     *\r\n     * (.note) This call _does not revert_ if the signature is invalid, or\r\n     * if the signer is otherwise unable to be retrieved. In those scenarios,\r\n     * the zero address is returned.\r\n     *\r\n     * (.warning) `hash` _must_ be the result of a hash operation for the\r\n     * verification to be secure: it is possible to craft signatures that\r\n     * recover to arbitrary addresses for non-hashed data. A safe way to ensure\r\n     * this is by receiving a hash of the original message (which may otherwise)\r\n     * be too long), and then calling `toEthSignedMessageHash` on it.\r\n     */\r\n    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {\r\n        // Check the signature length\r\n        if (signature.length != 65) {\r\n            return (address(0));\r\n        }\r\n\r\n        // Divide the signature in r, s and v variables\r\n        bytes32 r;\r\n        bytes32 s;\r\n        uint8 v;\r\n\r\n        // ecrecover takes the signature parameters, and the only way to get them\r\n        // currently is to use assembly.\r\n        // solhint-disable-next-line no-inline-assembly\r\n        assembly {\r\n            r := mload(add(signature, 0x20))\r\n            s := mload(add(signature, 0x40))\r\n            v := byte(0, mload(add(signature, 0x60)))\r\n        }\r\n\r\n        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature\r\n        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines\r\n        // the valid range for s in (281): 0 < s < secp256k1n ÷ 2 + 1, and for v in (282): v ∈ {27, 28}. Most\r\n        // signatures from current libraries generate a unique signature with an s-value in the lower half order.\r\n        //\r\n        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value\r\n        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or\r\n        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept\r\n        // these malleable signatures as well.\r\n        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {\r\n            return address(0);\r\n        }\r\n\r\n        if (v != 27 && v != 28) {\r\n            return address(0);\r\n        }\r\n\r\n        // If the signature is valid (and not malleable), return the signer address\r\n        return ecrecover(hash, v, r, s);\r\n    }\r\n\r\n    /**\r\n     * @dev Returns an Ethereum Signed Message, created from a `hash`. This\r\n     * replicates the behavior of the\r\n     * [`eth_sign`](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)\r\n     * JSON-RPC method.\r\n     *\r\n     * See `recover`.\r\n     */\r\n    function toEthSignedMessageHash(bytes32 hash) internal pure returns (bytes32) {\r\n        // 32 is the length in bytes of hash,\r\n        // enforced by the type signature above\r\n        return keccak256(abi.encodePacked(\"\\x19Ethereum Signed Message:\\n32\", hash));\r\n    }\r\n}",
-  "sourcePath": "C:/AsadFiles/RealEstateLedgerFrontEnd/contracts/ECDSALibrary.sol",
+  "sourcePath": "C:\\AsadFiles\\RealEstateLedgerFrontEnd\\contracts\\ECDSALibrary.sol",
   "ast": {
     "absolutePath": "/C/AsadFiles/RealEstateLedgerFrontEnd/contracts/ECDSALibrary.sol",
     "exportedSymbols": {
@@ -816,7 +816,7 @@
                       "name": "ecrecover",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1983,
+                      "referencedDeclaration": 2149,
                       "src": "3161:9:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_ecrecover_pure$_t_bytes32_$_t_uint8_$_t_bytes32_$_t_bytes32_$returns$_t_address_$",
@@ -1012,7 +1012,7 @@
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1978,
+                            "referencedDeclaration": 2144,
                             "src": "3671:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_abi",
@@ -1059,7 +1059,7 @@
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1985,
+                      "referencedDeclaration": 2151,
                       "src": "3661:9:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -1981,7 +1981,7 @@
                       "name": "ecrecover",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1983,
+                      "referencedDeclaration": 2149,
                       "src": "3161:9:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_ecrecover_pure$_t_bytes32_$_t_uint8_$_t_bytes32_$_t_bytes32_$returns$_t_address_$",
@@ -2177,7 +2177,7 @@
                             "name": "abi",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1978,
+                            "referencedDeclaration": 2144,
                             "src": "3671:3:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_abi",
@@ -2224,7 +2224,7 @@
                       "name": "keccak256",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 1985,
+                      "referencedDeclaration": 2151,
                       "src": "3661:9:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
@@ -2351,7 +2351,7 @@
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2019-06-09T18:49:00.714Z",
+  "updatedAt": "2019-06-12T04:43:07.535Z",
   "devdoc": {
     "details": "Elliptic Curve Digital Signature Algorithm (ECDSA) operations.\r  * These functions can be used to verify that a message was signed by the holder\r of the private keys of a given address.\r",
     "methods": {}

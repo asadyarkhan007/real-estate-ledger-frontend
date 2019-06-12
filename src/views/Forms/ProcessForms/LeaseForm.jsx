@@ -66,7 +66,8 @@ class LeaseForm extends React.Component {
   };
 
   componentDidMount() {
-    window.App.getLeasableProperties().then(data => {
+    let registrar = getCurrentUser();
+    window.App.getLeasableProperties(registrar.managingOrg.name.toLowerCase()).then(data => {
       console.log(data);
       this.prepareData(data);
     });
@@ -217,7 +218,7 @@ class LeaseForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Property No : ${el.PropertyNo} => Property Type: ${
+                      {`Property No : ${el.propertyNo} => Property Type: ${
                         el.propertyType
                       } Street: ${el.street}, Area: ${el.areaSqYards}, City: ${
                         el.city

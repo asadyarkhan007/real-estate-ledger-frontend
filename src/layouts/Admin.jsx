@@ -146,7 +146,7 @@ class AdminLayout extends React.Component {
       <div className={classes.wrapper}>
         <Sidebar
           routes={side_bar}
-          logoText={"Property management system"}
+          logoText={"Property Ledger"}
           username={this.state.user.username}
           logo={logo}
           image={this.state.image}

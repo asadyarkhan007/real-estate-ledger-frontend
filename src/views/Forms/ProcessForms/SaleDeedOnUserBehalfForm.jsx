@@ -17,12 +17,7 @@ import Axios from "axios";
 import { APIURL } from "../../../constants/AppConstants";
 import withStyles from "@material-ui/core/styles/withStyles";
 import regularFormsStyle from "../../../assets/jss/material-dashboard-pro-react/views/regularFormsStyle";
-import {
-  checkUserRole,
-  ROLES,
-  USER_TYPE,
-  getCurrentUser
-} from "../../../helpers/AuthHelper";
+import { USER_TYPE, getCurrentUser } from "../../../helpers/AuthHelper";
 
 class SaleDeedForm extends React.Component {
   constructor(props) {
@@ -34,6 +29,7 @@ class SaleDeedForm extends React.Component {
       deedType: null,
       seller: null,
       alert: null,
+      buyerList: [],
       buyer: null,
       disabled: false,
       properties: [],
@@ -51,6 +47,9 @@ class SaleDeedForm extends React.Component {
       .then(response => {
         this.setState({
           users: response.data.data.filter(val => {
+            return val.user_type === USER_TYPE.USER;
+          }),
+          buyerList: response.data.data.filter(val => {
             return val.user_type === USER_TYPE.USER;
           })
         });
@@ -85,20 +84,42 @@ class SaleDeedForm extends React.Component {
   };
 
   handleSellerChange = event => {
-    this.setState({
-      seller: event.target.value
-    },()=>{
-      window.App.getMutatedPropertiesForUserByNic(this.state.seller.nic).then(val=>{
-        if (val) this.setState({ properties: val });
-      })
-    });
-    
+    this.setState(
+      {
+        seller: event.target.value,
+        buyerList: this.state.users.filter(val => {
+          return val.id !== event.target.value;
+        })
+      },
+      () => {
+        let seller = this.state.users.filter(val => {
+          return val.id === this.state.seller;
+        })[0];
+        window.App.getMutatedPropertiesForUserByNic(seller.nic + "").then(
+          val => {
+            if (val) {
+              console.log("property Value", val);
+              this.setState({ properties: val });
+            }
+          }
+        );
+      }
+    );
   };
 
   handleDeedTypeChange = event => {
-    this.setState({
-      deedType: event.target.value
-    });
+    this.setState(
+      {
+        deedType: event.target.value
+      },
+      () => {
+        if (this.state.deedType === "gift") {
+          this.setState({
+            soldAmount: 0
+          });
+        }
+      }
+    );
   };
 
   submitData = async () => {
@@ -152,6 +173,21 @@ class SaleDeedForm extends React.Component {
     });
   };
 
+  handleDeedTypeChange = event => {
+    this.setState(
+      {
+        deedType: event.target.value
+      },
+      () => {
+        if (this.state.deedType === "gift") {
+          this.setState({
+            soldAmount: 0
+          });
+        }
+      }
+    );
+  };
+
   hideAlert = () => {
     this.setState({
       alert: null
@@ -185,7 +221,6 @@ class SaleDeedForm extends React.Component {
     } = this.state;
     return (
       <div>
-        
         <GridContainer>
           <GridItem xs={12} md={12} sm={12}>
             <h5>Sale Deed Information</h5>
@@ -276,7 +311,9 @@ class SaleDeedForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Username : ${el.username}`}
+                      {`username : ${el.username} , NIC : ${
+                        el.nic
+                      } , Full Name: ${el.full_name} , email : ${el.email} `}
                     </MenuItem>
                   ))}
               </Select>
@@ -320,7 +357,7 @@ class SaleDeedForm extends React.Component {
                       }}
                       value={el.property.id}
                     >
-                      {`Property Id : ${el.property.id} => Street: ${
+                      {`Property No : ${el.property.propertyNo} => Street: ${
                         el.property.street
                       }, Area: ${el.property.areaSqYards} sq yards , City: ${
                         el.property.city
@@ -353,26 +390,28 @@ class SaleDeedForm extends React.Component {
             />
           </GridItem>
         </GridContainer>
-        <GridContainer>
-          <GridItem xs={12} sm={3}>
-            <FormLabel className={classes.labelHorizontal}>
-              Sold Amount
-            </FormLabel>
-          </GridItem>
-          <GridItem xs={12} sm={8}>
-            <CustomInput
-              formControlProps={{
-                fullWidth: true
-              }}
-              inputProps={{
-                value: soldAmount,
-                onChange: this.handleSoldAmountChange,
-                placeholder: "Sold Amount",
-                type: "number"
-              }}
-            />
-          </GridItem>
-        </GridContainer>
+        {this.state.deedType !== "gift" && (
+          <GridContainer>
+            <GridItem xs={12} sm={3}>
+              <FormLabel className={classes.labelHorizontal}>
+                Sold Amount
+              </FormLabel>
+            </GridItem>
+            <GridItem xs={12} sm={8}>
+              <CustomInput
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  value: soldAmount,
+                  onChange: this.handleSoldAmountChange,
+                  placeholder: "Sold Amount",
+                  type: "number"
+                }}
+              />
+            </GridItem>
+          </GridContainer>
+        )}
         <GridContainer>
           <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>Buyer</FormLabel>
@@ -401,8 +440,8 @@ class SaleDeedForm extends React.Component {
                 >
                   Choose Buyer
                 </MenuItem>
-                {users.length > 0 &&
-                  users.map(el => (
+                {this.state.buyerList.length > 0 &&
+                  this.state.buyerList.map(el => (
                     <MenuItem
                       classes={{
                         root: classes.selectMenuItem,
@@ -410,7 +449,9 @@ class SaleDeedForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Username : ${el.username}`}
+                      {`username : ${el.username} , NIC : ${
+                        el.nic
+                      } , Full Name: ${el.full_name} , email : ${el.email} `}
                     </MenuItem>
                   ))}
               </Select>

@@ -956,6 +956,38 @@ App = {
     }
     return list;
   },
+  getLeasableProperties: async function(managingOrg) {
+    let list = [];
+    let length = await App.getMutationCount();
+    if (length > 0) {
+      let obj = await App.getMutationDetail(0);
+      while (obj.nextId != 0) {
+        obj = await App.getMutationDetail(obj.nextId);
+        if(obj.latest ===1){
+          obj.leasedPropertyList = await App.getLeasedPropertyListByMutationId(obj.id);
+          if(obj.leasedPropertyList.length ===0 ){
+            let property = await App.getPropertyDetail(obj.propertyId);
+            if(managingOrg===property.managingOrg){
+            obj.property = property;
+            list.push(obj);
+          }
+          }else{
+            let result = obj.leasedPropertyList.filter(function(lease)
+            { return lease.leaseStartDate<= new Date().getTime() &&
+            lease.leaseEndDate >= new Date().getTime(); });
+            if(result == null){
+              let property = await App.getPropertyDetail(obj.propertyId);
+              if(managingOrg===property.managingOrg){
+              obj.property = property;
+              list.push(obj);
+              }
+            }
+          }
+        }
+      }
+    }
+    return list;
+  },
   getMutatedPropertiesForRegistrarByManagingOrgAndProperties: async function(_managingOrg,properties) {
       let mutationListWithProperties = await App.getMutationListWithProperties();
       let mutatedProperties = [];

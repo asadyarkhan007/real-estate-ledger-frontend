@@ -80,11 +80,11 @@ class MutatedPropertyDetailComponent extends React.Component {
                 </CardHeader>
                 <CardBody>
                   <GridContainer>
-                    <GridItem md={4} sm={4}>
-                      Country
+                    <GridItem xs={12} md={4} sm={4}>
+                      {"Property No"}
                     </GridItem>
-                    <GridItem md={4} sm={4}>
-                      {property.country}
+                    <GridItem xs={12} sm={6} md={6}>
+                      {property.propertyNo}
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
@@ -112,14 +112,6 @@ class MutatedPropertyDetailComponent extends React.Component {
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} md={4} sm={4}>
-                      {"Property No"}
-                    </GridItem>
-                    <GridItem xs={12} sm={6} md={6}>
-                      {property.propertyNo}
-                    </GridItem>
-                  </GridContainer>
-                  <GridContainer>
                     <GridItem md={4} sm={4}>
                       Kind
                     </GridItem>
@@ -141,6 +133,14 @@ class MutatedPropertyDetailComponent extends React.Component {
                     </GridItem>
                     <GridItem md={4} sm={4}>
                       {property.areaSqYards}
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem md={4} sm={4}>
+                      Country
+                    </GridItem>
+                    <GridItem md={4} sm={4}>
+                      {property.country}
                     </GridItem>
                   </GridContainer>
                 </CardBody>
@@ -223,10 +223,11 @@ class MutatedPropertyDetailComponent extends React.Component {
                         Mutated On
                       </GridItem>
                       <GridItem md={4} sm={4}>
-                        {val.mutation.mutatedOn}
+                        {new Date(val.mutation.mutatedOn).toLocaleDateString(
+                          "en-US"
+                        )}
                       </GridItem>
                     </GridContainer>
-
                     {val.leasedPropertyList.length > 0 &&
                       val.leasedPropertyList.map((value, key) => (
                         <div>

@@ -376,7 +376,7 @@ class PropertyForms extends React.Component {
                       <Assignment />
                     </CardIcon>
                     <h4 className={classes.cardIconTitle}>
-                      Mutation {data.length + 1 - (key + 1)}
+                      Transfer History {data.length + 1 - (key + 1)}
                     </h4>
                   </CardHeader>
                   <CardBody>
@@ -441,9 +441,80 @@ class PropertyForms extends React.Component {
                         Mutated On
                       </GridItem>
                       <GridItem md={4} sm={4}>
-                        {val.mutation.mutatedOn}
+                        {new Date(val.mutation.mutatedOn).toLocaleDateString(
+                          "en-US"
+                        )}
                       </GridItem>
                     </GridContainer>
+
+                    {val.leasedPropertyList.length > 0 &&
+                      val.leasedPropertyList.map((value, key) => (
+                        <div>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              <h4>
+                                Lease Detail{" - "}
+                                {val.leasedPropertyList.length + 1 - (key + 1)}
+                              </h4>
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {""}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              Lease Start Date
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {new Date(
+                                value.leaseStartDate
+                              ).toLocaleDateString("en-US")}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              Lease End Date
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {new Date(value.leaseEndDate).toLocaleDateString(
+                                "en-US"
+                              )}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              Leasing Amount
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {value.leasedAmount}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              Tax Per Year
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {value.taxAmountPerYear}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              Lease to Name
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {val.mutation.newOwnerFullName}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem md={4} sm={4}>
+                              Lease to Nic
+                            </GridItem>
+                            <GridItem md={4} sm={4}>
+                              {value.leasedToNic}
+                            </GridItem>
+                          </GridContainer>
+                        </div>
+                      ))}
                   </CardBody>
                 </Card>
               </GridContainer>

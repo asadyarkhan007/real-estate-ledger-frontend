@@ -91,9 +91,18 @@ class SaleDeedForm extends React.Component {
   };
 
   handleDeedTypeChange = event => {
-    this.setState({
-      deedType: event.target.value
-    });
+    this.setState(
+      {
+        deedType: event.target.value
+      },
+      () => {
+        if (this.state.deedType === "gift") {
+          this.setState({
+            soldAmount: 0
+          });
+        }
+      }
+    );
   };
 
   submitData = async () => {
@@ -265,7 +274,7 @@ class SaleDeedForm extends React.Component {
                       }}
                       value={el.property.id}
                     >
-                      {`Property Id : ${el.property.id} => Street: ${
+                      {`Property No : ${el.property.propertyNo} => Street: ${
                         el.property.street
                       }, Area: ${el.property.areaSqYards} sq yards , City: ${
                         el.property.city
@@ -298,26 +307,28 @@ class SaleDeedForm extends React.Component {
             />
           </GridItem>
         </GridContainer>
-        <GridContainer>
-          <GridItem xs={12} sm={3}>
-            <FormLabel className={classes.labelHorizontal}>
-              Sold Amount
-            </FormLabel>
-          </GridItem>
-          <GridItem xs={12} sm={8}>
-            <CustomInput
-              formControlProps={{
-                fullWidth: true
-              }}
-              inputProps={{
-                value: soldAmount,
-                onChange: this.handleSoldAmountChange,
-                placeholder: "Sold Amount",
-                type: "number"
-              }}
-            />
-          </GridItem>
-        </GridContainer>
+        {this.state.deedType !== "gift" && (
+          <GridContainer>
+            <GridItem xs={12} sm={3}>
+              <FormLabel className={classes.labelHorizontal}>
+                Sold Amount
+              </FormLabel>
+            </GridItem>
+            <GridItem xs={12} sm={8}>
+              <CustomInput
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  value: soldAmount,
+                  onChange: this.handleSoldAmountChange,
+                  placeholder: "Sold Amount",
+                  type: "number"
+                }}
+              />
+            </GridItem>
+          </GridContainer>
+        )}
         <GridContainer>
           <GridItem xs={12} sm={3}>
             <FormLabel className={classes.labelHorizontal}>Buyer</FormLabel>
@@ -355,7 +366,9 @@ class SaleDeedForm extends React.Component {
                       }}
                       value={el.id}
                     >
-                      {`Username : ${el.username}`}
+                      {`username : ${el.username} , NIC : ${
+                        el.nic
+                      } , Full Name: ${el.full_name} , email : ${el.email} `}
                     </MenuItem>
                   ))}
               </Select>

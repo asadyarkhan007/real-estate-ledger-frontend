@@ -110,14 +110,14 @@ class AuthNavbar extends React.Component {
           <Hidden smDown>
             <div className={classes.flex}>
               <Button href="/" className={classes.title} color="transparent">
-                {"Property management system"}
+                {"Property Ledger"}
               </Button>
             </div>
           </Hidden>
           <Hidden mdUp>
             <div className={classes.flex}>
               <Button href="#" className={classes.title} color="transparent">
-                Property Ledger Application
+                Property Ledger DApp
               </Button>
             </div>
           </Hidden>
